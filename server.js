@@ -1,16 +1,7 @@
-const path = require("path")
-const express = require("./express")
-const bodyParser = require("./body-parser")
-const app = express()
+const chalk = require('chalk')
+const app = require('./server/app')
 
 const PORT = process.env.PORT || 3001
-
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json());
-app.use("*", (res, res) => {
-  res.sendFile(path.join(__dirname, "./client/build/index.html"))
-})
-
 app.listen(PORT, () =>
-  console.log(chalk.bgBlue(`Now listening on PORT :${PORT}`))
+  console.log(chalk.bgBlue(`Now listening on PORT :${PORT}`)) //eslint-disable-line no-console
 )
