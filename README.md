@@ -1,5 +1,5 @@
-# react-express
-A simple starter for react-express apps
+# runpaint
+learning about canvas by making a paint program
 
 ## Start
 `yarn install`   
