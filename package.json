@@ -1,7 +1,7 @@
 {
   "name": "react-express",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "main.js",
   "author": "Eric Scott <scottzillaster@gmail.com>",
   "license": "MIT",
   "scripts": {
@@ -12,7 +12,7 @@
     "install": "cd client && yarn install",
     "build": "cd client && npm run build",
     "heroku-postbuild": "npm run build",
-    "test": "jest .",
+    "test": "jest ./server",
     "lint": "eslint ./"
   },
   "dependencies": {

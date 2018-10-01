@@ -1,0 +1,63 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  padding:15px;
+  background: #111111;
+  color:#DDDDDD;
+  font-family: monospace;
+}
+
+.terminal {
+  font-family: 'Share Tech Mono', monospace;
+  text-shadow: 0 0 5px #BBBBFF,0 0 5px #BBBBFF;
+}
+
+.terminal::before {
+  font-family: 'Share Tech Mono', monospace;
+  content: "> ";
+  text-shadow: 0 0 5px #BBBBFF;
+}
+
+.terminal::after {
+  animation: blinker 1s linear infinite;
+  font-family: 'Share Tech Mono', monospace;
+  content: "|";
+  text-shadow: 0 0 5px #BBBBFF;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+canvas {
+  border: 3px solid red;
+  box-sizing:content-box;
+  /* width:640px; */
+}
+
+.lightText {
+  color: #CCCCCC;
+}
+.darkText {
+  color: #111111;
+}
+
+.swatch#active {
+  border: 3px solid red;
+}
+
+.swatch, .eraser {
+  box-sizing:content-box;
+  width:200px;
+  padding:15px;
+  margin:15px;
+}
+
+.spreadRow {
+  display:flex;
+  justify-content:space-between;
+}
