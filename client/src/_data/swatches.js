@@ -9,4 +9,4 @@ const SWATCHES = [{
   color: '#CC4444'
 }]
 
-export default SWATCHES;
+export default SWATCHES

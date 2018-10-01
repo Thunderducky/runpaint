@@ -16,6 +16,7 @@
     "lint": "eslint ./"
   },
   "dependencies": {
+    "babel-eslint": "^10.0.1",
     "body-parser": "^1.18.3",
     "chalk": "^2.4.1",
     "eslint": "^5.5.0",

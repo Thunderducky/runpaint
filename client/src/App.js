@@ -8,18 +8,7 @@ const isDark = color => {
   if(color[0] === '#'){
     color = color.slice(1)
   }
-  return colorHelper.isDark(color);
-}
-
-// Move into a mouse helper
-// NOTE: This includes the boundaries
-const getRelativeMousePoint = event => {
-  const rect = event.target.getBoundingClientRect();
-  const point = {
-    x: event.clientX - rect.x,
-    y: event.clientY - rect.y
-  };
-  return point;
+  return colorHelper.isDark(color)
 }
 
 class App extends Component {
@@ -32,36 +21,10 @@ class App extends Component {
       swatches: SWATCHES
     }
   }
-  onColorClick = (swatch) => {
+  onColorClick = swatch => {
     this.setState({activeSwatch: swatch})
   }
 
-  componentDidMount(){
-    // const ctx = this.canvas.getContext('2d')
-    // ctx.fillStyle='blue'
-    // ctx.fillRect(2,2, 100, 100)
-    // add all of our click handlers and listeners
-    // though in reality we might move these around later
-  }
-
-  // CANVAS COMPONENT
-  // onCanvasMouseDown = event => {
-  //   const point = getRelativeMousePoint(event);
-  //   this.setState({canvasMouseDown:true})
-  //   console.log("DOWN", point);
-  // }
-  // onCanvasMouseUp = event => {
-  //   const point = getRelativeMousePoint(event);
-  //   this.setState({canvasMouseDown:false})
-  //   console.log("UP", point);
-  // }
-  //
-  // onCanvasMouseMove = event => {
-  //   const point = getRelativeMousePoint(event);
-  //   if(this.state.canvasMouseDown){
-  //     console.log("MOVE", point);
-  //   }
-  // }
   render() {
     const { activeSwatch } = this.state
     return (
@@ -70,9 +33,6 @@ class App extends Component {
         <div> {/* main */}
           <h1 className="terminal">paint.exe</h1>
           <Canvas
-            // onMouseDown={this.onCanvasMouseDown}
-            // onMouseUp={this.onCanvasMouseUp}
-            // onMouseMove={this.onCanvasMouseMove}
             ref={c => {this.canvas = c} }
             zoom={20}
             color={this.state.activeSwatch.color}

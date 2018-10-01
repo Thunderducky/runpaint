@@ -14,4 +14,4 @@ const colorHelper = {
   }
 }
 
-export default colorHelper;
+export default colorHelper
