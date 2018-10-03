@@ -108,5 +108,4 @@ describe('Testing PubsubREcorder', () => {
     })
     rec.replay(0)
   })
-  // TODO: write filter test
 })

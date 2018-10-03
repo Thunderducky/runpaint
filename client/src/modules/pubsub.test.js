@@ -30,7 +30,12 @@ describe('Testing Pubsub', () => {
       Pubsub1.publish('test.message.no-subscribers', 'test3')
     ).not.toThrow()
   })
-
-  // TODO: Write test that tries to mutate the message
-  // which should not be allowed
+  test('modifying-message-causes-errors', () => {
+    expect(() =>{
+      Pubsub1.subscribe('test.message.no.modifying.messages', (msg) => {
+        msg.test = true
+      })
+      Pubsub1.publish('test.message.no.modifying.messages', {test:false})
+    }).toThrow()
+  })
 })
