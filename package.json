@@ -2,7 +2,7 @@
   "name": "react-express",
   "version": "1.0.0",
   "main": "main.js",
-  "author": "Eric Scott <scottzillaster@gmail.com>",
+  "author": "Eric Scott",
   "license": "MIT",
   "scripts": {
     "start": "per-env",
