@@ -32,7 +32,10 @@ const makeUndoSystem = (PUBSUB, topics, onReset, filter) => {
     },
     // rollback rolls back to the current undoIndex
     resetHead(){
-      this._recorder.rollback(this._undoIndex)
+      if(this._undoIndex > 0){
+        this._recorder.rollback(this._undoIndex)
+        this._undoIndex = 0
+      }
     },
     redo(){
       this._undoIndex--

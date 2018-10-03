@@ -31,15 +31,7 @@ class App extends Component {
       activeSwatch: SWATCHES[0],
       swatches: SWATCHES
     }
-  }
-  onColorClick = swatch => {
-    this.setState({activeSwatch: swatch, eraserActive: false})
-  }
-  onEraserClick = () =>{
-    this.setState({eraserActive: true})
-  }
-  componentDidMount(){
-    // Let's set up our undo system here
+
     const clearCanvas = () => {
       PUBSUB.publish('canvas.renderer.clearRect', {rect: rect(0,0,640,640)})
     }
@@ -69,6 +61,15 @@ class App extends Component {
       }
     }
   }
+  onColorClick = swatch => {
+    this.setState({activeSwatch: swatch, eraserActive: false})
+  }
+  onEraserClick = () =>{
+    this.setState({eraserActive: true})
+  }
+  componentDidMount(){
+    // Let's set up our undo system her
+  }
 
   render() {
     const { activeSwatch } = this.state
@@ -84,6 +85,7 @@ class App extends Component {
             eraserActive={this.state.eraserActive}
             width={32}
             height={32}
+            undoSystem={this.undoSystem}
           />
           <div className="spreadRow"></div>
         </div>

@@ -2,8 +2,6 @@ import React from 'react'
 import { addCanvasRenderSubscriber } from '../modules/canvasRenderer'
 import {PUBSUB} from '../modules/pubsub'
 
-let undoIndex = 0
-
 const getRelativeMousePoint = event => {
   const rect = event.target.getBoundingClientRect()
   const point = {
@@ -28,6 +26,7 @@ class Canvas extends React.Component {
       cellsWide: props.width,
       cellsHigh: props.height
     }
+    this.undoSystem = props.undoSystem
   }
   componentDidMount(){
     this.ctx = this.canvasEl.getContext('2d')
@@ -77,8 +76,7 @@ class Canvas extends React.Component {
 
   paintCell = ({x,y}, style) => {
     const { zoom } = this.props
-    this.recorder.rollback(undoIndex)
-    undoIndex = 0
+    this.undoSystem.resetHead()
     PUBSUB.publish('canvas.renderer.fillRect',
       {
         style,
@@ -88,8 +86,7 @@ class Canvas extends React.Component {
   }
   eraseCell = ({x,y}) => {
     const { zoom } = this.props
-    this.recorder.rollback(undoIndex)
-    undoIndex = 0
+    this.undoSystem.resetHead()
     PUBSUB.publish('canvas.renderer.clearRect',
       {
         rect: rect(x * zoom, y * zoom, zoom, zoom)
@@ -97,20 +94,33 @@ class Canvas extends React.Component {
     )
   }
 
+  exportAsPNG = event => {
+    // based off of: https://stackoverflow.com/questions/12796513/html5-canvas-to-png-file
+    let download = this.canvasEl.toDataURL('image/png')
+    download = download.replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
+
+    /* In addition to <a>'s "download" attribute, you can define HTTP-style headers */
+    download = download.replace(/^data:application\/octet-stream/, 'data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=Mastapeece.png')
+    event.target.href = download
+  }
+
   render(){
     const {
       zoom = 1
     } = this.props
     return (
-      <canvas
-        ref={c => this.canvasEl = c}
-        height={this.state.cellsHigh * zoom}
-        width={this.state.cellsWide * zoom}
-        onMouseDown={this.onCanvasMouseDown}
-        onMouseMove={this.onCanvasMouseMove}
-      >
-        No Canvas Support
-      </canvas>
+      <div>
+        <canvas
+          ref={c => this.canvasEl = c}
+          height={this.state.cellsHigh * zoom}
+          width={this.state.cellsWide * zoom}
+          onMouseDown={this.onCanvasMouseDown}
+          onMouseMove={this.onCanvasMouseMove}
+        >
+          No Canvas Support
+        </canvas>
+        <div><a style={{color:'white'}} download="Mastapeece.png" onClick={this.exportAsPNG}>Export</a></div>
+      </div>
     )
   }
 }
