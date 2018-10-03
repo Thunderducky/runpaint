@@ -53,6 +53,9 @@ class Canvas extends React.Component {
       if(event.key === 'z'){
         this.undo()
       }
+      if(event.key === 'x'){
+        this.redo()
+      }
     }
     document.addEventListener('mouseup', () => {
       this.mouseDown = false
@@ -65,10 +68,22 @@ class Canvas extends React.Component {
   // THIS IS PROBLEMATIC
   undo = () => {
     undoIndex++
-    console.log(undoIndex)
-    console.log(this.recorder)
-    PUBSUB.publish('canvas.renderer.clearRect', {rect: rect(0,0,640,640)})
-    this.recorder.replay(0, this.recorder.count()-(undoIndex + 1)) // replay all but the last 2
+    if(this.recorder.count()-(undoIndex + 1) < -1){
+      undoIndex--
+    } else {
+      PUBSUB.publish('canvas.renderer.clearRect', {rect: rect(0,0,640,640)})
+      this.recorder.replay(0, this.recorder.count()-(undoIndex + 1)) // replay all but the last 2
+    }
+  }
+  // OPTIMIZE: make it only go one step forward
+  redo = () => {
+    undoIndex--
+    if(undoIndex < 0){
+      undoIndex = 0
+    } else {
+      //PUBSUB.publish('canvas.renderer.clearRect', {rect: rect(0,0,640,640)})
+      this.recorder.replay(this.recorder.count()-(undoIndex + 1), this.recorder.count()-(undoIndex + 1)) // replay all but the last 2
+    }
   }
 
   onCanvasMouseDown = event => {

@@ -48,17 +48,6 @@ const makePubsubRecorder = (PUBSUB, topic, filter = DEFAULT_FILTER) => {
         })
       }
     }
-    // if(obj.recording){
-    //   if(avoidDuplicates){
-    //     obj._messages.push({
-    //       msg: msg,
-    //       topic: _topic
-    //     })
-    //
-    //   } else {
-    //
-    //   }
-    // }
   })
   return obj
 }

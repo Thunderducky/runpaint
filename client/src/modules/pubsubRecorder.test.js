@@ -65,5 +65,48 @@ describe('Testing PubsubREcorder', () => {
     })
     rec.replay(1,2)
   })
+  test('we can filter events', () => {
+    expect.assertions(2)
+    const PUBSUB = makePubSub()
+    const filter = (msg) => {
+      return msg !== 'test2' && msg !== 'test3'
+    }
+
+    const rec = makePubsubRecorder(PUBSUB, 'test', filter).listen()
+    PUBSUB.publish('test', 'test1')
+    PUBSUB.publish('test', 'test2')
+    PUBSUB.publish('test', 'test3')
+    PUBSUB.publish('test', 'test4')
+
+    // reversed because we are using pop
+    const results = ['test4', 'test1']
+    PUBSUB.subscribe('test', msg => {
+      expect(msg).toBe(results.pop())
+    })
+    rec.replay(0)
+  })
+
+  test('we can filter repeat events', () => {
+    expect.assertions(3)
+    const PUBSUB = makePubSub()
+    const filter = (msg, lastMsg) => {
+      return msg !== lastMsg
+    }
+
+    const rec = makePubsubRecorder(PUBSUB, 'test', filter).listen()
+    PUBSUB.publish('test', 'test1')
+    PUBSUB.publish('test', 'test1')
+    PUBSUB.publish('test', 'test2')
+    PUBSUB.publish('test', 'test2')
+    PUBSUB.publish('test', 'test3')
+    PUBSUB.publish('test', 'test3')
+
+    // reversed because we are using pop
+    const results = ['test3', 'test2', 'test1']
+    PUBSUB.subscribe('test', msg => {
+      expect(msg).toBe(results.pop())
+    })
+    rec.replay(0)
+  })
   // TODO: write filter test
 })
