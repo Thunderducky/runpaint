@@ -1,18 +1,18 @@
 import { makePubsubRecorder } from './pubsubRecorder'
 import { makePubSub } from './pubsub'
 
-describe('Testing PubsubREcorder', () => {
+describe('Testing PubsubRecorder', () => {
   test('it works at all', () => {
     expect( () => {
       const PUBSUB = makePubSub()
-      const obj = makePubsubRecorder(PUBSUB, 'test')
+      const obj = makePubsubRecorder(PUBSUB, ['test'])
       expect(obj).toBeTruthy() // it's an object
     }).not.toThrow()
   })
   // TODO: It records when we publish something after it starts
   test('it records when I tell it to listen', () => {
     const PUBSUB = makePubSub()
-    const rec = makePubsubRecorder(PUBSUB, 'test').listen()
+    const rec = makePubsubRecorder(PUBSUB, ['test']).listen()
     PUBSUB.publish('test', 'test1')
     PUBSUB.publish('test', 'test2')
     PUBSUB.publish('test', 'test3')
@@ -20,7 +20,7 @@ describe('Testing PubsubREcorder', () => {
   })
   test('it doesn\'t record by default', () => {
     const PUBSUB = makePubSub()
-    const rec = makePubsubRecorder(PUBSUB, 'test')
+    const rec = makePubsubRecorder(PUBSUB, ['test'])
     PUBSUB.publish('test', 'test1')
     PUBSUB.publish('test', 'test2')
     PUBSUB.publish('test', 'test3')
@@ -28,7 +28,7 @@ describe('Testing PubsubREcorder', () => {
   })
   test('we can stop recording', () => {
     const PUBSUB = makePubSub()
-    const rec = makePubsubRecorder(PUBSUB, 'test').listen()
+    const rec = makePubsubRecorder(PUBSUB, ['test']).listen()
     PUBSUB.publish('test', 'test1')
     PUBSUB.publish('test', 'test2')
     rec.deafen()
@@ -38,7 +38,7 @@ describe('Testing PubsubREcorder', () => {
   test('we can replay events', () => {
     expect.assertions(2)
     const PUBSUB = makePubSub()
-    const rec = makePubsubRecorder(PUBSUB, 'test').listen()
+    const rec = makePubsubRecorder(PUBSUB, ['test']).listen()
     PUBSUB.publish('test', 'test1')
     PUBSUB.publish('test', 'test2')
 
@@ -52,7 +52,7 @@ describe('Testing PubsubREcorder', () => {
   test('we can replay selective events', () => {
     expect.assertions(2)
     const PUBSUB = makePubSub()
-    const rec = makePubsubRecorder(PUBSUB, 'test').listen()
+    const rec = makePubsubRecorder(PUBSUB, ['test']).listen()
     PUBSUB.publish('test', 'test1')
     PUBSUB.publish('test', 'test2')
     PUBSUB.publish('test', 'test3')
@@ -68,11 +68,11 @@ describe('Testing PubsubREcorder', () => {
   test('we can filter events', () => {
     expect.assertions(2)
     const PUBSUB = makePubSub()
-    const filter = (msg) => {
+    const filter = ({msg}) => {
       return msg !== 'test2' && msg !== 'test3'
     }
 
-    const rec = makePubsubRecorder(PUBSUB, 'test', filter).listen()
+    const rec = makePubsubRecorder(PUBSUB, ['test'], filter).listen()
     PUBSUB.publish('test', 'test1')
     PUBSUB.publish('test', 'test2')
     PUBSUB.publish('test', 'test3')
@@ -89,11 +89,11 @@ describe('Testing PubsubREcorder', () => {
   test('we can filter repeat events', () => {
     expect.assertions(3)
     const PUBSUB = makePubSub()
-    const filter = (msg, lastMsg) => {
+    const filter = ({msg}, {msg:lastMsg}) => {
       return msg !== lastMsg
     }
 
-    const rec = makePubsubRecorder(PUBSUB, 'test', filter).listen()
+    const rec = makePubsubRecorder(PUBSUB, ['test'], filter).listen()
     PUBSUB.publish('test', 'test1')
     PUBSUB.publish('test', 'test1')
     PUBSUB.publish('test', 'test2')

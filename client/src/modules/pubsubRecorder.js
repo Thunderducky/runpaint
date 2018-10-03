@@ -1,9 +1,11 @@
 const DEFAULT_FILTER = (lastMsg, msg) => true // eslint-disable-line no-unused-vars
 
-const makePubsubRecorder = (PUBSUB, topic, filter = DEFAULT_FILTER) => {
+const last = arr => arr[arr.length - 1]
+
+const makePubsubRecorder = (PUBSUB, topics, filter = DEFAULT_FILTER) => {
   const obj = {
     _messages: [],  // private fields,s but useful for debugging
-    _topic: topic,
+    _topics: topics,
     recording: false,
 
     listen(){
@@ -37,18 +39,23 @@ const makePubsubRecorder = (PUBSUB, topic, filter = DEFAULT_FILTER) => {
       return this
     }
   }
+
   // TODO, add ability to unsubscribe
-  PUBSUB.subscribe(topic, (msg, _topic) => {
-    if(obj.recording){
-      const last = arr => arr[arr.length - 1]
-      if(filter(msg, last(obj._messages) ? last(obj._messages).msg : false)){
-        obj._messages.push({
-          msg: msg,
-          topic: _topic
-        })
+  // add multi subscribe?
+  // hardcoded topics
+  obj._topics.forEach(topic => {
+    PUBSUB.subscribe(topic, (msg, _topic) => {
+      if(obj.recording){
+        if(filter({msg:msg, topic: _topic}, last(obj._messages) || false)) {
+          obj._messages.push({
+            msg: msg,
+            topic: _topic
+          })
+        }
       }
-    }
+    })
   })
+
   return obj
 }
 
