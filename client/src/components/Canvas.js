@@ -2,6 +2,9 @@ import React from 'react'
 import { addCanvasRenderSubscriber } from '../modules/canvasRenderer'
 import {PUBSUB} from '../modules/pubsub'
 import { makePubsubRecorder } from '../modules/pubsubRecorder'
+
+let undoIndex = 0
+
 const getRelativeMousePoint = event => {
   const rect = event.target.getBoundingClientRect()
   const point = {
@@ -17,6 +20,12 @@ const rect = (x,y,width,height) => {
   }
 }
 
+const sameRect = (a,b) => {
+  return a.x === b.x && a.y === b.y
+    && a.width === b.width
+    && a.height === b.height
+}
+
 // This Component is really unmanaged
 class Canvas extends React.Component {
   constructor(props){
@@ -30,7 +39,13 @@ class Canvas extends React.Component {
   componentDidMount(){
     this.ctx = this.canvasEl.getContext('2d')
     addCanvasRenderSubscriber(this.ctx,PUBSUB)
-    this.recorder = makePubsubRecorder(PUBSUB,'canvas.renderer.fillRect').listen()
+    this.recorder = makePubsubRecorder(
+      PUBSUB,
+      'canvas.renderer.fillRect',
+      (msg, lastmsg) => {
+        return !((msg.style === lastmsg.style)
+          && sameRect(msg.rect, lastmsg.rect))
+      }).listen()
 
     // TODO: Make into an official context to listen to and ask for
     // PUBSUB the keyboard
@@ -49,8 +64,11 @@ class Canvas extends React.Component {
 
   // THIS IS PROBLEMATIC
   undo = () => {
+    undoIndex++
+    console.log(undoIndex)
+    console.log(this.recorder)
     PUBSUB.publish('canvas.renderer.clearRect', {rect: rect(0,0,640,640)})
-    this.recorder.replay(0, this.recorder.count()-2) // replay all but the last 2
+    this.recorder.replay(0, this.recorder.count()-(undoIndex + 1)) // replay all but the last 2
   }
 
   onCanvasMouseDown = event => {
@@ -79,6 +97,8 @@ class Canvas extends React.Component {
 
   paintCell = ({x,y}, style) => {
     const { zoom } = this.props
+    this.recorder.rollback(undoIndex)
+    undoIndex = 0
     PUBSUB.publish('canvas.renderer.fillRect',
       {
         style,
