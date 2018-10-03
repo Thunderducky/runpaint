@@ -3,7 +3,7 @@ const path = require('path')
 const app = require('./server/app')
 const express = require('express')
 const PORT = process.env.PORT || 3001
-app.use(express.static('client/build'))
+app.use(express.static('../client/build'))
 app.use(function(req,res){
   res.sendFile(path.join(__dirname,'./client/build/index.html'))
 })
