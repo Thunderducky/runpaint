@@ -1270,7 +1270,7 @@ expect@^23.5.0:
     jest-message-util "^23.4.0"
     jest-regex-util "^23.3.0"
 
-express@^4.16.3:
+express@^4.16.2, express@^4.16.3:
   version "4.16.3"
   resolved "http://registry.npmjs.org/express/-/express-4.16.3.tgz#6af8a502350db3246ecc4becf6b5a34d22f7ed53"
   dependencies:
@@ -3907,6 +3907,12 @@ sshpk@^1.7.0:
     ecc-jsbn "~0.1.1"
     jsbn "~0.1.0"
     tweetnacl "~0.14.0"
+
+ssl-express-www@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/ssl-express-www/-/ssl-express-www-3.0.3.tgz#b5e65a3819a2bd8269a25cad04fc88bb74cba756"
+  dependencies:
+    express "^4.16.2"
 
 stack-utils@^1.0.1:
   version "1.0.1"
