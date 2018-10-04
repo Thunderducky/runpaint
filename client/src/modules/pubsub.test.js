@@ -71,7 +71,7 @@ describe('Testing Pubsub', () => {
   test('that-the-topic-is-passed-along-as-well', () => {
     expect.assertions(1)
     Pubsub1.subscribe('test.message.topic', (msg,topic) => {
-      expect(topic).toBe(test.message.topic)
+      expect(topic).toBe('test.message.topic')
     })
     Pubsub1.publish('test.message.topic', { notbeing:'tested'})
 
