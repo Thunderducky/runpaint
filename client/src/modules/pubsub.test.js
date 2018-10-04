@@ -86,6 +86,4 @@ describe('Testing Pubsub', () => {
     expect(Pubsub1.subscriberCount('test.subscriber.count')).toBe(2)
 
   })
-
-  // TODO: Add a test for subscriber counts
 })
