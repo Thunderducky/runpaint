@@ -12,11 +12,11 @@ class AddSwatchForm extends React.Component {
     if(this.props.submitFn){
       if(this.state.name.trim() !== ''){
         alert('color must have a name')
-        return;
+        return
       }
       if(this.state.name.trim() !== ''){
         alert('color must have a color value')
-        return;
+        return
       }
       this.props.submitFn(this.state.name, this.state.color)
       this.setState({name: '', color: ''})
