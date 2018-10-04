@@ -1,7 +1,10 @@
 import { makePubSub } from './pubsub'
 
-const Pubsub1 = makePubSub()
+let Pubsub1 = makePubSub()
 describe('Testing Pubsub', () => {
+  beforeEach(() => {
+    Pubsub1 = makePubSub()
+  })
   test('normal-subscribing-is-errorless', () => {
     expect( () =>
       Pubsub1.subscribe('test.message', (msg, topic) => {}) //eslint-disable-line no-unused-vars
@@ -11,10 +14,10 @@ describe('Testing Pubsub', () => {
     expect(() => Pubsub1.subscribe('test.message')).toThrow()
   })
   test('single-subscriber-should-receive-publications', () => {
-    Pubsub1.subscribe('test.message.receivable', (msg) => {
+    Pubsub1.subscribe('test.message.receivable.single', (msg) => {
       expect(msg).toBe('test1')
     })
-    Pubsub1.publish('test.message.receivable', 'test1')
+    Pubsub1.publish('test.message.receivable.single', 'test1')
   })
   test('all-subscribers-should-receive-publications', () => {
     Pubsub1.subscribe('test.message.receivable.multi', (msg) => {
