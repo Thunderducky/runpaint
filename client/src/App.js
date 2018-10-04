@@ -74,45 +74,51 @@ class App extends Component {
   render() {
     const { activeSwatch } = this.state
     return (
-      <div className="spreadRow">
+      <div>
+        <div className="spreadRow">
 
-        <div> {/* main */}
-          <h1 className="terminal">paint.exe</h1>
-          <Canvas
-            ref={c => {this.canvas = c} }
-            zoom={20}
-            color={this.state.activeSwatch.color}
-            eraserActive={this.state.eraserActive}
-            width={32}
-            height={32}
-            undoSystem={this.undoSystem}
-          />
-          <div className="spreadRow"></div>
-        </div>
-        <div> {/* sidebar TODO: return to component */}
-          {!this.state.eraserActive
-            ? ( // TODO: do this more elegantly
-              <Swatch color={activeSwatch.color}>
-                <span className={isDark(activeSwatch.color) ? 'lightText' : 'darkText'}>{activeSwatch.name}</span>
-              </Swatch>
-            ) : (
-              <Swatch color="#FFFFFF" onClick={this.onEraserClick}>
-                <span className="darkText">Eraser</span>
-              </Swatch>
-            )
-          }
-          { this.state.swatches.map( (swatch, index) => {
-            return (
-              <Swatch key={index} color={swatch.color} onClick={() => this.onColorClick(swatch) }>
-                <span className={isDark(swatch.color) ? 'lightText' : 'darkText'}>{swatch.name}</span>
-              </Swatch>
-            )
-          } )}
-          <Swatch color="#FFFFFF" onClick={this.onEraserClick}>
-            <span className="darkText">Eraser</span>
-          </Swatch>
-        </div>
+          <div> {/* main */}
+            <h1 className="terminal">paint.exe</h1>
+            <Canvas
+              ref={c => {this.canvas = c} }
+              zoom={20}
+              color={this.state.activeSwatch.color}
+              eraserActive={this.state.eraserActive}
+              width={32}
+              height={32}
+              undoSystem={this.undoSystem}
+            />
+            <div className="spreadRow"></div>
+          </div>
+          <div> {/* sidebar TODO: return to component */}
+            <div>Active:</div>
+            {!this.state.eraserActive
+              ? ( // TODO: do this more elegantly
+                <Swatch color={activeSwatch.color}>
+                  <span className={isDark(activeSwatch.color) ? 'lightText' : 'darkText'}>{activeSwatch.name}</span>
+                </Swatch>
+              ) : (
+                <Swatch color="#FFFFFF" onClick={this.onEraserClick}>
+                  <span className="darkText">Eraser</span>
+                </Swatch>
+              )
+            }
+            { this.state.swatches.map( (swatch, index) => {
+              return (
+                <Swatch key={index} color={swatch.color} onClick={() => this.onColorClick(swatch) }>
+                  <span className={isDark(swatch.color) ? 'lightText' : 'darkText'}>{swatch.name}</span>
+                </Swatch>
+              )
+            } )}
+            <Swatch color="#FFFFFF" onClick={this.onEraserClick}>
+              <span className="darkText">Eraser</span>
+            </Swatch>
+          </div>
 
+        </div>
+        <div>
+          'Z' to undo, 'X' to redo
+        </div>
       </div>
     )
   }
