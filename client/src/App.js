@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Swatch from './components/Swatch'
 import Canvas from './components/Canvas'
+import AddSwatchForm from './components/AddSwatchForm'
 import SWATCHES from './_data/swatches'
 import colorHelper from './modules/colorHelper'
 import {PUBSUB} from './modules/pubsub'
@@ -22,14 +23,21 @@ const sameRect = (a,b) => {
     && a.height === b.height
 }
 
+const genId = () => {
+  return genId._id++
+}
+genId._id = 0
+
 class App extends Component {
   constructor(){
     super()
+    // add a unique id to it
+    const swatches = SWATCHES.map(s => {s.id = genId(); return s})
     this.state = {
       canvasMouseDown: false,
       eraserActive: false,
-      activeSwatch: SWATCHES[0],
-      swatches: SWATCHES
+      activeSwatch: swatches[0],
+      swatches: swatches
     }
 
     const clearCanvas = () => {
@@ -68,7 +76,24 @@ class App extends Component {
     this.setState({eraserActive: true})
   }
   componentDidMount(){
-    // Let's set up our undo system her
+    // Let's set up our undo system here
+    window.addSwatch = (name, color) => this.addSwatch(name, color)
+  }
+  addSwatch(name, color){
+    const newSwatch = { name, color, id: genId() }
+    this.setState({swatches: [...this.state.swatches, newSwatch]})
+  }
+
+  confirmDelete(id, event){
+    event.stopPropagation()
+    const swatch = this.state.swatches.filter(s => s.id === id)[0]
+    if(window.confirm(`Remove ${swatch.name} ?`)){
+      this.setState({
+        eraserActive: swatch.id === this.state.activeSwatch.id,
+        swatches: this.state.swatches.filter(s => s.id !== id)
+      })
+    }
+    return false
   }
 
   render() {
@@ -107,17 +132,19 @@ class App extends Component {
               return (
                 <Swatch key={index} color={swatch.color} onClick={() => this.onColorClick(swatch) }>
                   <span className={isDark(swatch.color) ? 'lightText' : 'darkText'}>{swatch.name}</span>
+                  <button style={{float:'right'}} onClick={event => this.confirmDelete(swatch.id, event)}>X</button>
                 </Swatch>
               )
             } )}
             <Swatch color="#FFFFFF" onClick={this.onEraserClick}>
               <span className="darkText">Eraser</span>
             </Swatch>
+            <AddSwatchForm submitFn={(name, color) => this.addSwatch(name, color)}/>
           </div>
 
         </div>
         <div>
-          'Z' to undo, 'X' to redo
+          &#39;Z&#39; to undo, &#39;X&#39; to redo
         </div>
       </div>
     )
