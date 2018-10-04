@@ -21,8 +21,15 @@ const rect = (x,y,width,height) => {
 class Canvas extends React.Component {
   constructor(props){
     super()
-    this.mouseDown = false
+    // Kept outside of state because this
+    // is a control mechanism,
+    // not displayed information
+    this.mouseDown = false,
     this.state = {
+      mouseInCanvas: false,
+      mouseCellPosition: {x:0,y:0},
+      mouseDownCellPosition: {x:0,y:0},
+      mouseIsDown: false,
       cellsWide: props.width,
       cellsHigh: props.height
     }
@@ -33,43 +40,69 @@ class Canvas extends React.Component {
     addCanvasRenderSubscriber(this.ctx,PUBSUB)
     // TODO: Move the recorder out of the canvas
 
-    document.addEventListener('mouseup', () => {
+    document.addEventListener('mouseup', event => {
       this.mouseDown = false
+      this.setState({mouseIsDown: false})
+      this.updateMouseCellPosition(event)
       // const point = getRelativeMousePoint(event);
       // console.log("UP", point);
     })
 
   }
 
-  onCanvasMouseDown = event => {
-    this.mouseDown = true
-    // const point = getRelativeMousePoint(event);
-    // console.log("DOWN", point);
-    const { zoom, color='white' } = this.props
+  updateMouseCellPosition = event => {
+    const { zoom } = this.props
     const point = getRelativeMousePoint(event),
       cellX = Math.floor(point.x/zoom),
       cellY = Math.floor(point.y/zoom)
+    const cell = p(cellX, cellY)
+    this.setState({mouseCellPosition: cell })
+    return cell
+  }
+
+  onCanvasMouseDown = event => {
+
+    const cell = this.updateMouseCellPosition(event)
+    if(this.mouseDown){
+      this.setState({mouseIsDown: true})
+    } else {
+      this.setState({
+        mouseIsDown: true,
+        mouseDownCellPosition: cell
+      })
+    }
+
+    this.mouseDown = true
+
+    const { color='white' } = this.props
+
 
     if(this.props.eraserActive){
-      this.eraseCell(p(cellX, cellY))
+      this.eraseCell(cell)
     } else {
-      this.paintCell(p(cellX, cellY), color)
+      this.paintCell(cell, color)
     }
+  }
+
+  onCanvasEnter = event => {
+    this.updateMouseCellPosition(event)
+    this.setState({mouseInCanvas: true})
+  }
+
+  onCanvasExit = event => {
+    this.updateMouseCellPosition(event)
+    this.setState({mouseInCanvas: false})
   }
 
   // track changes and be able to "rerender"
   onCanvasMouseMove = event => {
-    const point = getRelativeMousePoint(event)
-    const { zoom, color='white' } = this.props
+    const cell = this.updateMouseCellPosition(event)
+    const { color='white' } = this.props
     if(this.mouseDown){
-      // console.log("MOVE", point);
-
-      const cellX = Math.floor(point.x/zoom)
-      const cellY = Math.floor(point.y/zoom)
       if(this.props.eraserActive){
-        this.eraseCell(p(cellX, cellY))
+        this.eraseCell(cell)
       } else {
-        this.paintCell(p(cellX, cellY), color)
+        this.paintCell(cell, color)
       }
     }
   }
@@ -104,6 +137,10 @@ class Canvas extends React.Component {
     event.target.href = download
   }
 
+  renderCellPosition = (cell) => {
+    return `(${cell.x}, ${cell.y})`
+  }
+
   render(){
     const {
       zoom = 1
@@ -116,10 +153,27 @@ class Canvas extends React.Component {
           width={this.state.cellsWide * zoom}
           onMouseDown={this.onCanvasMouseDown}
           onMouseMove={this.onCanvasMouseMove}
+          onMouseEnter={this.onCanvasEnter}
+          onMouseLeave={this.onCanvasExit}
         >
           No Canvas Support
         </canvas>
-        <div><a style={{color:'white'}} download="Mastapeece.png" onClick={this.exportAsPNG}>Export</a></div>
+        <div style={{display:'flex', justifyContent: 'space-between'}}>
+          <div><a style={{color:'white'}} download="Mastapeece.png" onClick={this.exportAsPNG}>Export</a></div>
+          <div>
+            {
+              (this.state.mouseIsDown)
+                ? 'Start ' + this.renderCellPosition(this.state.mouseDownCellPosition)
+                : ''
+            }
+            {
+              (this.state.mouseInCanvas)
+                ? 'Current ' + this.renderCellPosition(this.state.mouseCellPosition)
+                : ''
+            }
+
+          </div>
+        </div>
       </div>
     )
   }

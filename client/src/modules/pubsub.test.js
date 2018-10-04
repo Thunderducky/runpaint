@@ -84,6 +84,5 @@ describe('Testing Pubsub', () => {
     expect(Pubsub1.subscriberCount('test.subscriber.count')).toBe(3)
     Pubsub1.unsubscribe('test.subscriber.count', subId)
     expect(Pubsub1.subscriberCount('test.subscriber.count')).toBe(2)
-
   })
 })
