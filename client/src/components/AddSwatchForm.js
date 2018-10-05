@@ -10,16 +10,17 @@ class AddSwatchForm extends React.Component {
     event.preventDefault()
     // TODO: Validations
     if(this.props.submitFn){
-      if(this.state.name.trim() !== ''){
+      if(this.state.name.trim() === ''){
         alert('color must have a name')
-        return
+        return false
       }
-      if(this.state.name.trim() !== ''){
+      if(this.state.value.trim() === ''){
         alert('color must have a color value')
-        return
+        return false
       }
       this.props.submitFn(this.state.name, this.state.color)
       this.setState({name: '', color: ''})
+      return true
     } else {
       throw new Error('You must have a prop \'submitFn\' defined')
     }
