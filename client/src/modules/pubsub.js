@@ -1,8 +1,6 @@
 let _id = 1
 const genId = () => _id++
 
-// TODO: Add unsubscribing
-
 const makePubSub = () => {
   const obj = {
     topics: {}
@@ -19,7 +17,7 @@ const makePubSub = () => {
     while(topicSets.length > 0){
       const topic = topicSets.join('.')
       if(obj.topics[topic]){
-        obj.topics[topic].forEach(sub => sub(msg, topic))
+        obj.topics[topic].forEach(sub => sub(msg, _topic))
       }
       topicSets.pop()
     }
@@ -49,7 +47,7 @@ const makePubSub = () => {
     if(obj.subscriberCount(topic) === 0){
       throw Error('no subscribers on this topic')
     }
-    obj.topics[topic] = obj.topics[topic].filter(fn => fn._id != fnId)
+    obj.topics[topic] = obj.topics[topic].filter(fn => fn._id !== fnId)
   }
 
   return obj
