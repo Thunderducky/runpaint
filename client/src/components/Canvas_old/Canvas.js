@@ -2,7 +2,7 @@ import React from 'react'
 import { makeCanvasStateManager } from './canvasStateManager'
 import { addCanvasRenderSubscriber } from './canvasRenderer'
 import { addCanvasHistoryListener } from './canvasHistoryListener'
-import {PUBSUB} from '../../modules/pubsub'
+import { PUBSUB } from '../../modules/pubsub'
 
 // THESE BELONG IN SOME COMMON FILE
 const getRelativeMousePoint = event => {
@@ -31,7 +31,7 @@ const mouseProcess = (event, zoom) => {
 }
 
 
-
+// PROVIDES
 
 class Canvas extends React.Component {
   constructor(props){

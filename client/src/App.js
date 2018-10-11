@@ -1,137 +1,27 @@
-import React, { Component } from 'react'
-import Swatch from './components/Swatch'
-import Canvas from './components/Canvas'
-import AddSwatchForm from './components/AddSwatchForm'
-import MousePositionTracker from './components/MousePositionTracker'
-import SWATCHES from './_data/swatches'
-import colorHelper from './modules/colorHelper'
-import { PUBSUB } from './modules/pubsub'
+import React from 'react'
+import {PUBSUB} from './modules/pubsub'
+import Main from './components/Main'
 
-const isDark = color => {
-  if(color[0] === '#'){
-    color = color.slice(1)
-  }
-  return colorHelper.isDark(color)
-}
-
-const genId = () => {
-  return genId._id++
-}
-genId._id = 0
-
-class App extends Component {
+import {makeMasterContext} from  './contexts/masterContext'
+import {makeCanvasProcesser } from  './processers/canvasProcesser'
+class App extends React.Component {
   constructor(){
     super()
-    // add a unique id to it
-    const swatches = SWATCHES.map(s => {s.id = genId(); return s})
-    this.state = {
-      eraserActive: false,
-      activeSwatch: swatches[0],
-      swatches: swatches
-    }
-    document.onkeydown = (event) => {
-      if(event.key === 'z'){
-        PUBSUB.publish('canvas.history.undo', {})
-      }
-      if(event.key === 'x'){
-        PUBSUB.publish('canvas.history.redo', {})
-      }
-    }
+    // Let's set up our initial context
+    // with a canvas provider
+    // with something like width and height already
+    // setup
+    // can't be named context because react uses that
+    this.myContext = makeMasterContext(PUBSUB)
+    this.canvasProcesser = makeCanvasProcesser(PUBSUB, this.myContext)
+    window.PUBSUB = PUBSUB // makes it easier to experiment with
+    window.myContext = this.myContext
+    window.canvasProcesser = this.canvasProcesser
   }
-
-  onColorClick = swatch => {
-    this.setState({activeSwatch: swatch, eraserActive: false})
-  }
-  onEraserClick = () =>{
-    this.setState({eraserActive: true})
-  }
-  // This can be moved
-  addSwatch(name, color){
-    const newSwatch = { name, color, id: genId() }
-    this.setState({swatches: [...this.state.swatches, newSwatch]})
-  }
-
-  // This can be moved
-  confirmDelete(id, event){
-    event.stopPropagation()
-    const swatch = this.state.swatches.filter(s => s.id === id)[0]
-    if(window.confirm(`Remove ${swatch.name} ?`)){
-      this.setState({
-        eraserActive: swatch.id === this.state.activeSwatch.id,
-        swatches: this.state.swatches.filter(s => s.id !== id)
-      })
-    }
-    return false
-  }
-
-  render() {
-    const { activeSwatch } = this.state
+  render(){
     return (
       <div>
-        <div className="spreadRow">
-
-          <div> {/* main */}
-            <h1 className="terminal">paint.exe</h1>
-            <Canvas
-              ref={c => {this.canvas = c} }
-              zoom={20}
-              color={this.state.activeSwatch.color}
-              eraserActive={this.state.eraserActive}
-              width={32}
-              height={32}
-            />
-            <div className="spreadRow">
-              <MousePositionTracker PUBSUB={PUBSUB} />
-            </div>
-          </div>
-          <div> {/* sidebar TODO: return to component */}
-            <div>Active:</div>
-            {!this.state.eraserActive
-              ? ( // TODO: do this more elegantly
-                <Swatch color={activeSwatch.color}>
-                  <span className={isDark(activeSwatch.color) ? 'lightText' : 'darkText'}>{activeSwatch.name}</span>
-                </Swatch>
-              ) : (
-                <Swatch color="#FFFFFF" onClick={this.onEraserClick}>
-                  <span className="darkText">Eraser</span>
-                </Swatch>
-              )
-            }
-            { this.state.swatches.map( (swatch, index) => {
-              return (
-                <Swatch key={index} color={swatch.color} onClick={() => this.onColorClick(swatch) }>
-                  <span className={isDark(swatch.color) ? 'lightText' : 'darkText'}>{swatch.name}</span>
-                  <button style={{float:'right'}} onClick={event => this.confirmDelete(swatch.id, event)}>X</button>
-                </Swatch>
-              )
-            } )}
-            <Swatch color="#FFFFFF" onClick={this.onEraserClick}>
-              <span className="darkText">Eraser</span>
-            </Swatch>
-            <AddSwatchForm submitFn={(name, color) => this.addSwatch(name, color)}/>
-          </div>
-
-        </div>
-        <div>
-          &#39;Z&#39; to undo, &#39;X&#39; to redo
-        </div>
-        <div style={{display:'flex', justifyContent: 'space-between'}}>
-          <div>
-            <a style={{color:'white'}}
-              download="Mastapeece.png"
-              onClick={
-                // export images
-                event => {
-                  PUBSUB.publish(
-                    'canvas.request.imageData',
-                    { cb: data => event.target.href = data }
-                  )
-                }
-              }>
-                Export
-            </a>
-          </div>
-        </div>
+        <Main PUBSUB={PUBSUB} context={this.myContext}/>
       </div>
     )
   }
