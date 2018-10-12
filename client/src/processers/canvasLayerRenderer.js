@@ -11,9 +11,8 @@ const makeCanvasLayerRenderer = (PUBSUB, ctx) => {
     ctx.clearRect(rect.x, rect.y, rect.width, rect.height)
   })
 
-  // a way to debug or look at if we need to
   const obj = {
-    _ctx: ctx,
+    _ctx: ctx,  // for debugging
     remove: () => {
       // todo, unsubscribe everything, important later for when we unsubscribe layers when we delete them
       PUBSUB.unsubscribe('canvas.render.fillRect', sub1)

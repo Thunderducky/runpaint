@@ -1,21 +1,24 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-
+import { isDark } from '../modules/colorHelper'
 const styles = {
   swatch: {
     margin:15,
-    padding: 15
+    padding:15
   }
 }
+const NOOP = () => {}
 
-const Swatch = (props) => (
-  <div onClick={props.onClick} style={Object.assign({background: props.color}, styles.swatch)}>
-    {props.children}
-  </div>
-)
-
-Swatch.propTypes = {
-  color: PropTypes.string
+const Swatch = props => {
+  const propStyle = {
+    background: props.color,
+    color: isDark(props.color) ? 'white': 'black'
+  }
+  const style = Object.assign(propStyle, styles.swatch)
+  return (
+    <div style={style} onClick={props.onClick || NOOP}>
+      {props.children}
+    </div>
+  )
 }
 
 export default Swatch

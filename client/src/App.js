@@ -7,13 +7,10 @@ import {makeCanvasProcesser } from  './processers/canvasProcesser'
 class App extends React.Component {
   constructor(){
     super()
-    // Let's set up our initial context
-    // with a canvas provider
-    // with something like width and height already
-    // setup
-    // can't be named context because react uses that
     this.myContext = makeMasterContext(PUBSUB)
     this.canvasProcesser = makeCanvasProcesser(PUBSUB, this.myContext)
+
+    // FOR DEBUG
     window.PUBSUB = PUBSUB // makes it easier to experiment with
     window.myContext = this.myContext
     window.canvasProcesser = this.canvasProcesser

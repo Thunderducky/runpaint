@@ -1,50 +1,57 @@
-const makeCanvasProcesser = (PUBSUB, context) => {
+const makeCanvasProcesser = (PUBSUB/*, context*/) => {
   const {subscribe:SUB, publish:PUB} = PUBSUB
   // Listen for commands and make commands for the renderer
   // This is essentially a very large relay
 
-  SUB('canvas.command.dotpen', () => {
-    const {mouseCoord:coords, cellSize } = context.request().canvas
-    // we need to adjust for the border size at some point
-    //console.log("COMMAND", coords)
+  // we could probably just pass these through
+  // as part of the messages, so we don't have request the context
+  const sub1 = SUB('canvas.command.dotpen', (msg) => {
+    // this could really be done in the context
+    // but that's technically not it's job I think
+    const { mouseCoord, cellSize, style } = msg
+
+    // determine which cell we should be in
+    // and the corresponding x and y coordinates
+    const x = Math.floor(mouseCoord.x/cellSize)*cellSize
+    const y = Math.floor(mouseCoord.y/cellSize)*cellSize
+
     PUB('canvas.render.fillRect', {
       rect:{
-        x:coords.x,
-        y:coords.y,
+        x,
+        y,
         height: cellSize,
         width: cellSize,
-      }, style: 'white'
+      }, style
     })
   })
 
-  // Initial, just draw on the pixel we tell it to, but we'll just assume we are working with
-  // cellSize = 1
-  // PUBSUB.subscribe('canvas.input.mouse.down', ({coords}) => {
-  //   console.log(`mouse down! (${coords.x}, ${coords.y})`)
-  //   PUBSUB.publish('canvas.render.fillRect', {
-  //     rect:{
-  //       x:coords.x,
-  //       y:coords.y,
-  //       height: 1,
-  //       width: 1,
-  //     }, style: 'white'
-  //   })
-  // })
-  // PUBSUB.subscribe('canvas.input.mouse.move', ({coords}) => {
-  //   const isMouseDown = context.request().mouseDown
-  //   console.log(`mouse move! (${coords.x}, ${coords.y})`)
-  //   if(isMouseDown){
-  //     PUBSUB.publish('canvas.render.fillRect', {
-  //       rect:{
-  //         x:coords.x,
-  //         y:coords.y,
-  //         height: 1,
-  //         width: 1,
-  //       }, style: 'white'
-  //     })
-  //   }
-  // })
-  const obj = {}
+  const sub2 = SUB('canvas.command.eraser', (msg) => {
+    // this could really be done in the context
+    // but that's technically not it's job I think
+    const { mouseCoord, cellSize } = msg
+
+    // determine which cell we should be in
+    // and the corresponding x and y coordinates
+    const x = Math.floor(mouseCoord.x/cellSize)*cellSize
+    const y = Math.floor(mouseCoord.y/cellSize)*cellSize
+
+    PUB('canvas.render.clearRect', {
+      rect:{
+        x,
+        y,
+        height: cellSize,
+        width: cellSize,
+      }
+    })
+  })
+
+  // we might add a message list at some point
+  const obj = {
+    unsubscribe:() => {
+      PUBSUB.unsubscribe('canvas.command.dotpen', sub1)
+      PUBSUB.unsubscribe('canvas.command.eraser', sub2)
+    }
+  }
   return obj
 }
 

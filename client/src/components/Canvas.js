@@ -9,6 +9,7 @@ class Canvas extends React.Component {
     height:0,
   }
   componentDidMount(){
+    // TODO: Refactor this to integrate with only PUBSUB and not context if possible
     // Listen to our context for this information
     const {context, PUBSUB } = this.props
     // request the context and set up listeners

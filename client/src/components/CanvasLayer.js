@@ -15,6 +15,13 @@ const getRelativeMousePoint = event => {
 // We need to publish our canvas after we mount?
 // or should this be added on demand by a higher component?
 class CanvasLayer extends React.Component {
+  componentDidMount(){
+    window.document.addEventListener('mouseup', () => {
+      this.props.PUBSUB.publish(
+        'canvas.input.mouse.up',
+        { coords: {x:0,y:0}, outside:true })
+    })
+  }
   render(){
     const {PUBSUB, width, height } = this.props
     const {publish:PUB} = PUBSUB
