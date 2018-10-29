@@ -1,5 +1,5 @@
 # runpaint
-learning about canvas by making a paint program
+learning about canvas by making a paint program. (Hosted at www.paintaday.com)
 
 ## Start
 `yarn install`   

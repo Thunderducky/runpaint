@@ -14,7 +14,7 @@ class AddSwatchForm extends React.Component {
         alert('color must have a name')
         return false
       }
-      if(this.state.value.trim() === ''){
+      if(this.state.color.trim() === ''){
         alert('color must have a color value')
         return false
       }
