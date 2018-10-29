@@ -29,7 +29,7 @@ describe('Add Swatch Form Tests', () => {
 
     testInstance.instance.setState({
       name: '',
-      value: '#0000FF'
+      color: '#0000FF'
     },() => {
       expect(testInstance.instance.submit(fakeSubmitEvent)).toBe(false)
       done()
@@ -42,7 +42,7 @@ describe('Add Swatch Form Tests', () => {
     const testInstance = testRenderer.root
     testInstance.instance.setState({
       name: 'blue',
-      value: ''
+      color: ''
     },() => {
       expect(testInstance.instance.submit(fakeSubmitEvent)).toBe(false)
       done()
@@ -55,7 +55,7 @@ describe('Add Swatch Form Tests', () => {
     const testInstance = testRenderer.root
     testInstance.instance.setState({
       name: 'blue',
-      value: '#0000FF'
+      color: '#0000FF'
     },() => {
       expect(testInstance.instance.submit(fakeSubmitEvent)).toBe(true)
       done()
