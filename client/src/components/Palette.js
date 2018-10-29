@@ -1,5 +1,6 @@
 import React from 'react'
 import Swatch from './Swatch'
+import * as Icons from './Icons'
 // Let's finish this up and then we'll go on to the 'tool bar' aspect of things
 
 // convenience function for making colors
@@ -20,21 +21,39 @@ class Palette extends React.Component{
   // HELPER THAT MAKES THE CORRECT CLICK HANDLER BASED OFF OF COLOR
   state = {
     activeColor: colors[0].color,
-    activeTool: 'dotpen'
+    activeTool: 'dotpen',
+    palette: []
   }
   componentDidMount(){
-    this.props.PUBSUB.subscribe('context.canvas.update.style',({style}) => {
+    const {subscribe: SUB } = this.props.PUBSUB
+    SUB('context.canvas.update.style',({style}) => {
       this.setState({activeColor: style})
     })
 
-    this.props.PUBSUB.subscribe('context.canvas.update.tool',({tool}) => {
+    SUB('context.canvas.update.tool',({tool}) => {
       this.setState({activeTool: tool})
     })
+
+    const { palette } = this.props.context.request()
+    this.setState({palette})
   }
+
+  renderToolIcon = () => {
+    switch(this.state.activeTool){
+    case 'dotpen':
+      return (<Icons.Pen />)
+    case 'eraser':
+      return (<Icons.Eraser />)
+    default:
+      throw new Error('render tool icon isn\'t set')
+    }
+  }
+
   render(){
     const wrapClickColor = (color) => {
       const clickHandler = () => {
         this.props.PUBSUB.publish('context.canvas.set.style', {style: color})
+        this.props.PUBSUB.publish('context.canvas.set.tool', {tool: 'dotpen'})
       }
       return clickHandler
     }
@@ -43,11 +62,12 @@ class Palette extends React.Component{
       <div>
         {/* I am being to clever here with the syntax, dumb it up */}
         <div style={{border: 'white solid 1px'}}>
+          {/* TODO: We should make this a seperate thing */}
           <Swatch color={this.state.activeColor}>
-            {this.state.activeTool}
+            {this.renderToolIcon()}
           </Swatch>
         </div>
-        {colors.map(
+        {this.state.palette.map(
           ({color, name}, index) => (
             <Swatch key={index} color={color} onClick={wrapClickColor(color)}>
               {name}

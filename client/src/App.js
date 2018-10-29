@@ -2,6 +2,7 @@ import React from 'react'
 import {PUBSUB} from './modules/pubsub'
 import Main from './components/Main'
 
+import {makeKeyboardShortcuts} from './modules/keyboardShortcuts'
 import {makeMasterContext} from  './contexts/masterContext'
 import {makeCanvasProcesser } from  './processers/canvasProcesser'
 class App extends React.Component {
@@ -14,6 +15,7 @@ class App extends React.Component {
     window.PUBSUB = PUBSUB // makes it easier to experiment with
     window.myContext = this.myContext
     window.canvasProcesser = this.canvasProcesser
+    makeKeyboardShortcuts(PUBSUB)
   }
   render(){
     return (
