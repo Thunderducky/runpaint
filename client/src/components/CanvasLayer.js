@@ -18,7 +18,7 @@ class CanvasLayer extends React.Component {
   componentDidMount(){
     window.document.addEventListener('mouseup', () => {
       this.props.PUBSUB.publish(
-        'canvas.input.mouse.up',
+        'context.mouse.up',
         { coords: {x:0,y:0}, outside:true })
     })
   }
@@ -32,19 +32,19 @@ class CanvasLayer extends React.Component {
           width={width}
           height={height}
           onMouseDown={ event =>
-            PUB('canvas.input.mouse.down', { coords: getRelativeMousePoint(event)})
+            PUB('context.mouse.down', { coords: getRelativeMousePoint(event)})
           }
           onMouseUp={ event =>
-            PUB('canvas.input.mouse.up', { coords: getRelativeMousePoint(event)})
+            PUB('context.mouse.up', { coords: getRelativeMousePoint(event)})
           }
           onMouseMove={ event =>
-            PUB('canvas.input.mouse.move', { coords: getRelativeMousePoint(event)})
+            PUB('context.mouse.move', { coords: getRelativeMousePoint(event)})
           }
           onMouseEnter={ event =>
-            PUB('canvas.input.mouse.enter', { coords: getRelativeMousePoint(event)})
+            PUB('context.mouse.enter', { coords: getRelativeMousePoint(event)})
           }
           onMouseLeave={ event =>
-            PUB('canvas.input.mouse.exit', { coords: getRelativeMousePoint(event)})
+            PUB('context.mouse.exit', { coords: getRelativeMousePoint(event)})
           }
         />
       </div>

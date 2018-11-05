@@ -1,28 +1,71 @@
 const p = (x,y) => { return {x,y}}
-const lineRaster = (start, end) => {
-  const points = [];
-  // Is the slope greater than one,
-  // or to put it another way, do we move in y faster than x
-  const isSteep = Math.abs(start.y - end.y) > Math.abs(start.x - end.x);
 
-  // if we're steep, we'll move along the y makeCanvasProcesser
-  if(isSteep){
-    if(start.x === end.x){
-      // we are vertical, just fill in everything vertically
-      if(start.y < end.y){
-        for(let i = start.y; i <= end.y; i++){
-          points.push(p(i, start.x));
-        }
-      } else {
-        for(let i = end.y; i <= start.y; i++){
-          points.push(p(i, start.x));
-        }
-      }
+// intEach is INCLUSIVE
+const intEach = (start, end, fn) => {
+  if(start < end){
+    for(let i = start; i <= end; i++){
+      fn(i)
     }
-  } else { // otherwise we'll move around the x
-
+  } else {
+    for(let i = start; i >= end; i--){
+      fn(i)
+    }
   }
-  return points;
+
+}
+// bresenham handler
+const lineRaster = (start, end) => {
+  const points = []
+
+  // determine quadrant
+  const deltaX = end.x - start.x
+  const deltaY = end.y - start.y
+  const signX = deltaX >= 0 ? 1 : -1
+  const signY = deltaY >= 0 ? 1 : -1
+  const vertical = Math.abs(deltaY) > Math.abs(deltaX)
+
+  if(vertical){
+    if(deltaX === 0){
+      intEach(start.y, end.y, y => {
+        points.push({x:start.x, y})
+      })
+    }
+    else {
+      let deltaError = Math.abs(deltaX/deltaY)
+      let x = start.x
+      let error = 0
+      intEach(start.y, end.y, y => {
+        points.push({x,y})
+        error += deltaError
+        if(error >= 0.5){
+          x += signX
+          error -= 1
+        }
+      })
+
+    }
+  } else {
+    if(deltaY === 0){
+      intEach(start.x, end.x, x => {
+        points.push({x, y:start.y})
+      })
+    } else {
+      let deltaError = Math.abs(deltaY/deltaX)
+      let y = start.y
+      let error = 0
+      intEach(start.x, end.x, x => {
+        points.push({x,y})
+        error += deltaError
+        if(error >= 0.5){
+          y += signY
+          error -= 1
+        }
+      })
+    }
+  }
+
+
+  return points
 }
 
 export { lineRaster}

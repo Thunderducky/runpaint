@@ -7,8 +7,7 @@ class MouseTracker extends React.Component {
   }
   componentDidMount(){
     const {subscribe:SUB} = this.props.PUBSUB;
-    SUB("canvas.update.input.mouse", ({cells}) => {
-      console.log(cells);
+    SUB("context.update.activeCell", ({cells}) => {
       this.setState({x: cells.x, y: cells.y});
     })
   }

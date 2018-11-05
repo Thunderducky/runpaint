@@ -23,6 +23,10 @@ const makePubSub = () => {
     }
 
   }
+  // special subscribe
+  obj.monitor = (topic) => {
+    return obj.subscribe(topic, (msg, topic) => console.log(topic, msg));
+  }
   obj.subscribe = (topic, fnListener) => {
     if((typeof fnListener) !== 'function'){
       throw Error('fnListener must be a function')

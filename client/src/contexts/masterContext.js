@@ -1,30 +1,10 @@
 import SWATCHES from '../_data/swatches'
 
-const makeMasterContext = (PUBSUB) => {
-  // we use a closure to make this work
-  const context = {
-    canvas: {
-      mouseDown: false,
-      mouseWasDown: false,
-      mouseCoord: {x: 0, y: 0 },
-      mouseInside: true,
-      // the mouse coordinate from the last draw
-      prevMouseCoord: {x: 0, y: 0},
-
-
-      width: 640,
-      height: 640,
-      cellSize: 20,
-
-      tool: 'dotpen',
-      style: 'white'
-    },
-    palette: SWATCHES,
-  }
-
+// we should build functions on top of the messaging system :/
+const makeCanvasContext = (context, PUBSUB) => {
   const {publish:PUB, subscribe:SUB} = PUBSUB
-
   // CANVAS EVENTS
+  // combine these events
   SUB('context.canvas.set.height', ({height}) => {
     context.canvas.height = height
     PUB('context.canvas.update.height', {height})
@@ -44,60 +24,57 @@ const makeMasterContext = (PUBSUB) => {
     context.canvas.style = style
     PUB('context.canvas.update.style', {style})
   })
-
-  // MOUSE EVENTS - If we detect that the user is using a mouse
-  SUB('canvas.input.mouse.down', () => {
-    console.log("DOWN DOWN DOWN DOWN");
-    context.canvas.mouseDown = true
+}
+const makeMouseContext = (context, PUBSUB) => {
+  const {publish:PUB, subscribe:SUB} = PUBSUB
+  SUB('context.mouse.down', () => {
+    context.mouse.down = true
   })
-  SUB('canvas.input.mouse.up', () => {
-    context.canvas.mouseDown = false
+  SUB('context.mouse.up', () => {
+    context.mouse.down = false
   })
 
   // also includes `move`, `enter`, and `exit`
-  SUB('canvas.input.mouse', ({coords, outside=false}, topic) => {
+  SUB('context.mouse', ({coords, outside=false}, topic) => {
     // outside is a special case for a mouse up outside of the canvas
     if(!outside){
-      context.canvas.mouseCoord.x = coords.x
-      context.canvas.mouseCoord.y = coords.y
+      context.mouse.coord.x = coords.x
+      context.mouse.coord.y = coords.y
     }
 
-    if(topic === 'canvas.input.mouse.exit' || outside){
-      context.canvas.mouseInside = false
+    if(topic === 'context.mouse.exit' || outside){
+      context.mouse.inside = false
     } else {
-      context.canvas.mouseInside = true
+      context.mouse.inside = true
     }
 
-    const toolTopics = ['canvas.input.mouse.down','canvas.input.mouse.move']
+    const toolTopics = ['context.mouse.down','context.mouse.move']
     if(toolTopics.includes(topic)){
       const {
-        mouseInside, mouseDown, mouseWasDown, mouseCoord,
-        tool, style, cellSize,
-        prevMouseCoord
+        tool, style, cellSize
       } = context.canvas
-
-      if(mouseInside && mouseDown){
+      const mouse = context.mouse;
+      if(mouse.inside && mouse.down){
         if(tool === 'dotpen'){
-          PUB('canvas.command.dotpen', {
+          PUB('command.dotpen', {
             style,
-            mouseCoord,
             cellSize,
-            prevMouseCoord,
-            mouseWasDown
+            coord: mouse.coord,
+            prevCoord: mouse.prevCoord,
+            continuing: mouse.wasDown
           })
         } else if(tool === 'eraser'){
-          PUB('canvas.command.eraser', {
-            mouseCoord,
+          PUB('command.eraser', {
             cellSize,
-            prevMouseCoord,
-            mouseWasDown
+            coord: mouse.coord,
+            prevCoord: mouse.prevCoord,
+            continuing: mouse.wasDown
           })
         }
       }
     }
 
-    // update our position after all of that
-    PUB('canvas.update.input.mouse',
+    PUB('context.update.activeCell',
       {
         cells:{
           x: coords.x/context.canvas.cellSize | 0,
@@ -106,18 +83,46 @@ const makeMasterContext = (PUBSUB) => {
       })
 
     // update some of our internal record keepers
-    context.canvas.mouseWasDown = context.canvas.mouseDown;
-    context.canvas.prevMouseCoord = context.canvas.mouseCoord
+    context.mouse.wasDown = context.mouse.down
+    context.mouse.prevCoord.x = context.mouse.coord.x
+    context.mouse.prevCoord.y = context.mouse.coord.y
   })
-
+}
+const makePaletteContext = (context, PUBSUB) => {
   // PALETTE EVENTS //
-  SUB('palette.set.add', ({name, color}) => {
+  const {publish:PUB, subscribe:SUB} = PUBSUB
+  SUB('context.palette.add', ({name, color}) => {
     context.palette.push({name, color})
   })
 
-  SUB('palette.set.remove', ({ index }) => {
+  SUB('context.palette.remove', ({ index }) => {
+    throw new Error("palette not removed, not implemented")
     //context.palette.push({name, color})
   })
+}
+const makeMasterContext = (PUBSUB) => {
+  // we use a closure to make this work
+  const context = {
+    canvas: {
+      width: 640,
+      height: 640,
+      cellSize: 20,
+      tool: 'dotpen',
+      style: 'white'
+    },
+    mouse: {
+      down: false,
+      wasDown: false,
+      coord: {x:0,y:0},
+      prevCoord: {x:0,y:0},
+      inside:false // inside the canvas
+    },
+    palette: SWATCHES,
+  }
+
+  makeCanvasContext(context, PUBSUB)
+  makeMouseContext(context, PUBSUB)
+  makePaletteContext(context, PUBSUB)
 
   const request = () => {
     return JSON.parse(JSON.stringify(context))
