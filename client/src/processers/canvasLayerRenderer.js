@@ -6,7 +6,6 @@ const makeCanvasLayerRenderer = (PUBSUB, ctx) => {
     if(style) ctx.fillStyle=style
     ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
   })
-
   const sub2 = PUBSUB.subscribe('canvas.render.clearRect', ({rect}) => {
     ctx.clearRect(rect.x, rect.y, rect.width, rect.height)
   })
@@ -14,7 +13,7 @@ const makeCanvasLayerRenderer = (PUBSUB, ctx) => {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
   })
 
-  // TODO: Clean up this mess, maybe move it to it's own section
+  // there are also NO tests around this :(
   const sub4 = PUBSUB.subscribe('canvas.render.smartFill', (msg) => {
     const {x,y,cellSize, color} = msg
     // HELPERS
@@ -91,21 +90,21 @@ const makeCanvasLayerRenderer = (PUBSUB, ctx) => {
     // need to build a mesh and repaint that instead of calling
     // all of these singley
 
-    const whileAsync = (checkFn, runFn, batchSize = 1) => {
-      const intervalId = setInterval(function(){
-        if(checkFn()){
-          for(let i = 0; i < batchSize; i++){
-            runFn();
-            if(!checkFn()){
-              clearInterval(intervalId);
-              break;
-            }
-          }
-        } else {
-          clearInterval(intervalId);
-        }
-      },1)
-    }
+    // const whileAsync = (checkFn, runFn, batchSize = 1) => {
+    //   const intervalId = setInterval(function(){
+    //     if(checkFn()){
+    //       for(let i = 0; i < batchSize; i++){
+    //         runFn();
+    //         if(!checkFn()){
+    //           clearInterval(intervalId);
+    //           break;
+    //         }
+    //       }
+    //     } else {
+    //       clearInterval(intervalId);
+    //     }
+    //   },1)
+    // }
 
     // whileAsync(() => cellQueue.length > 0, () => {
     //   const nextCell = cellQueue.pop()

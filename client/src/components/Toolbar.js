@@ -10,7 +10,8 @@ class Toolbar extends React.Component {
       this.setState({activeTool: tool})
     })
   }
-
+  // if it's a paintbucket we need to change back the
+  // default OR allow empty paintbucket paints
   setTool = tool => {
     this.props.PUBSUB.publish('context.canvas.set.tool', { tool })
   }
@@ -26,9 +27,9 @@ class Toolbar extends React.Component {
         <Tool onClick={() => this.setTool('dotpen')} isActive={isActive('dotpen')}>
           <Icons.Pen/> Dotpen
         </Tool>
-        <Tool onClick={() => this.setTool('eraser')} isActive={isActive('eraser')}>
+        {/* <Tool onClick={() => this.setTool('eraser')} isActive={isActive('eraser')}>
           <Icons.Eraser/> Eraser
-        </Tool>
+        </Tool> */}
         <Tool onClick={() => this.setTool('smartFill') } isActive={isActive('smartFill')}>
           <Icons.Tint/>Smart Fill
         </Tool>

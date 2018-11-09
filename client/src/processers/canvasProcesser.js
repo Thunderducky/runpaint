@@ -2,10 +2,7 @@ import { lineRaster } from '../modules/algorithmHelper'
 
 const makeCanvasProcesser = (PUBSUB/*, context*/) => {
   const {subscribe:SUB, publish:PUB} = PUBSUB
-  // Listen for commands and make commands for the renderer
-  // This is essentially a very large relay
 
-  // also make sure they are unique
   const p = (x,y) => { return {x,y} }
   const calculateStops = (cellPos1, cellPos2, cellSize) => {
     const a = p(cellPos1.x/cellSize, cellPos1.y/cellSize)
@@ -13,7 +10,6 @@ const makeCanvasProcesser = (PUBSUB/*, context*/) => {
     const stops = lineRaster(a, b)
     return stops.map(s => p(s.x*cellSize, s.y*cellSize))
   }
-
 
   // we could probably just pass these through
   // as part of the messages, so we don't have request the context
@@ -33,13 +29,11 @@ const makeCanvasProcesser = (PUBSUB/*, context*/) => {
     const prevX = cellDimension(prevCoord.x)
     const prevY = cellDimension(prevCoord.y)
 
-    // We should write some unit tests for parts
-    // of these
     const cellPositions = continuing ? calculateStops(
       p(prevX, prevY),
       p(x,y), cellSize
     ) : [p(x,y)]
-    // console.log(prevCoord, coord);
+
     cellPositions.forEach(({x,y}) => {
       PUB('canvas.render.fillRect', {
         rect:{
@@ -90,6 +84,20 @@ const makeCanvasProcesser = (PUBSUB/*, context*/) => {
       color
     })
   })
+
+  // build a general purpose undo/redo mechanism
+  const sub5 = SUB('command', (msg, topic) => {
+    if(topic === "command.undo"){
+      // UNDO
+      // turn off the recorder
+    } else if(topic === "command.redo"){
+      // REDO
+      // turn off the recorder
+    } else {
+      // RECORD
+    }
+  })
+
   // we might add a message list at some point
   const obj = {
     unsubscribe:() => {
@@ -97,6 +105,7 @@ const makeCanvasProcesser = (PUBSUB/*, context*/) => {
       PUBSUB.unsubscribe('command.eraser', sub2)
       PUBSUB.unsubscribe('command.clear', sub3)
       PUBSUB.unsubscribe('command.smartFill', sub4)
+      PUBSUB.unsubscribe('command', sub5)
     }
   }
   return obj

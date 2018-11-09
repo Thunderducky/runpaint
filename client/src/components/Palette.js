@@ -51,14 +51,18 @@ class Palette extends React.Component{
     }
   }
 
+  eraserClick(){
+    this.setState({activeColor: ""})
+    this.props.PUBSUB.publish('context.canvas.set.tool', {tool: 'eraser'})
+  }
+
   render(){
     const wrapClickColor = (color) => {
       const clickHandler = () => {
+        if(this.state.activeTool === 'eraser'){
+          this.props.PUBSUB.publish('context.canvas.set.tool', {tool: 'dotpen'})
+        }
         this.props.PUBSUB.publish('context.canvas.set.style', {style: color})
-        //const tool = this.props.context.request().canvas.tool
-        // if(tool === 'eraser'){
-        //   this.props.PUBSUB.publish('context.canvas.set.tool', {tool: 'dotpen'})
-        // }
       }
       return clickHandler
     }
@@ -72,6 +76,9 @@ class Palette extends React.Component{
             {this.renderToolIcon()}
           </Swatch>
         </div>
+        <Swatch onClick={() => this.eraserClick()}>
+          Eraser
+        </Swatch>
         {this.state.palette.map(
           ({color, name}, index) => (
             <Swatch key={index} color={color} onClick={wrapClickColor(color)}>

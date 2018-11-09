@@ -9,9 +9,12 @@ const styles = {
 const NOOP = () => {}
 
 const Swatch = props => {
-  const propStyle = {
-    background: props.color,
-    color: isDark(props.color) ? 'white': 'black'
+  const propStyle = {}
+  if(props.color){
+    propStyle.background = props.color,
+    propStyle.color = isDark(props.color) ? 'white': 'black'
+  } else {
+    propStyle.border = "1px solid white";
   }
   const style = Object.assign(propStyle, styles.swatch)
   return (
