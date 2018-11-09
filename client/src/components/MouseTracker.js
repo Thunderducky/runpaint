@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 class MouseTracker extends React.Component {
   state = {
@@ -6,9 +6,9 @@ class MouseTracker extends React.Component {
     y: 0
   }
   componentDidMount(){
-    const {subscribe:SUB} = this.props.PUBSUB;
-    SUB("context.update.activeCell", ({cells}) => {
-      this.setState({x: cells.x, y: cells.y});
+    const {subscribe:SUB} = this.props.PUBSUB
+    SUB('context.update.activeCell', ({cells}) => {
+      this.setState({x: cells.x, y: cells.y})
     })
   }
   render(){
@@ -16,4 +16,4 @@ class MouseTracker extends React.Component {
   }
 }
 
-export default MouseTracker;
+export default MouseTracker

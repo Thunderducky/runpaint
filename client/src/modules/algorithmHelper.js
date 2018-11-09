@@ -1,5 +1,3 @@
-const p = (x,y) => { return {x,y}}
-
 // intEach is INCLUSIVE
 const intEach = (start, end, fn) => {
   if(start < end){

@@ -44,6 +44,8 @@ class Palette extends React.Component{
       return (<Icons.Pen />)
     case 'eraser':
       return (<Icons.Eraser />)
+    case 'smartFill':
+      return (<Icons.Tint />)
     default:
       throw new Error('render tool icon isn\'t set')
     }
@@ -53,7 +55,10 @@ class Palette extends React.Component{
     const wrapClickColor = (color) => {
       const clickHandler = () => {
         this.props.PUBSUB.publish('context.canvas.set.style', {style: color})
-        this.props.PUBSUB.publish('context.canvas.set.tool', {tool: 'dotpen'})
+        //const tool = this.props.context.request().canvas.tool
+        // if(tool === 'eraser'){
+        //   this.props.PUBSUB.publish('context.canvas.set.tool', {tool: 'dotpen'})
+        // }
       }
       return clickHandler
     }

@@ -23,9 +23,10 @@ const makePubSub = () => {
     }
 
   }
-  // special subscribe
+  // DEBUG TOOL
   obj.monitor = (topic) => {
-    return obj.subscribe(topic, (msg, topic) => console.log(topic, msg));
+    // eslint-disable-next-line no-console
+    return obj.subscribe(topic, (msg, topic) => console.log(topic, msg))
   }
   obj.subscribe = (topic, fnListener) => {
     if((typeof fnListener) !== 'function'){

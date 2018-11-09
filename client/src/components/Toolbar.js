@@ -16,12 +16,7 @@ class Toolbar extends React.Component {
   }
 
   clearAll = () => {
-    this.props.PUBSUB.publish('command.clear', {});
-  }
-
-  fillAll = () => {
-    // TODO: this will probably have to go through the UI Context
-    this.props.PUBSUB.publish('command.fillAll', {});
+    this.props.PUBSUB.publish('command.clear', {})
   }
 
   render(){
@@ -34,12 +29,13 @@ class Toolbar extends React.Component {
         <Tool onClick={() => this.setTool('eraser')} isActive={isActive('eraser')}>
           <Icons.Eraser/> Eraser
         </Tool>
+        <Tool onClick={() => this.setTool('smartFill') } isActive={isActive('smartFill')}>
+          <Icons.Tint/>Smart Fill
+        </Tool>
         <Tool onClick={() => this.clearAll() }>
           <Icons.Eraser/> Clear All
         </Tool>
-        <Tool onClick={() => this.fillAll() }>
-          Fill All
-        </Tool>
+
       </div>
     )
   }

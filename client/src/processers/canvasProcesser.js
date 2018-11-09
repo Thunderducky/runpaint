@@ -27,17 +27,11 @@ const makeCanvasProcesser = (PUBSUB/*, context*/) => {
     } = msg
 
     const cellDimension = n => Math.floor(n/cellSize) * cellSize
-    // determine which cell we should be in
-    // and the corresponding x and y coordinates
     const x = cellDimension(coord.x)
     const y = cellDimension(coord.y)
 
     const prevX = cellDimension(prevCoord.x)
     const prevY = cellDimension(prevCoord.y)
-    // Need to do this for multiples if the cells are not the same
-    // chart the lines we might need to hit along the way
-    // make for some allowances in the movement
-    // nah, make it consistent
 
     // We should write some unit tests for parts
     // of these
@@ -63,13 +57,14 @@ const makeCanvasProcesser = (PUBSUB/*, context*/) => {
   const sub2 = SUB('command.eraser', (msg) => {
     // this could really be done in the context
     // but that's technically not it's job I think
-    const { mouseCoord, cellSize } = msg
+    const { coord, cellSize } = msg
 
     // determine which cell we should be in
     // and the corresponding x and y coordinates
-    const x = Math.floor(mouseCoord.x/cellSize)*cellSize
-    const y = Math.floor(mouseCoord.y/cellSize)*cellSize
+    const x = Math.floor(coord.x/cellSize)*cellSize
+    const y = Math.floor(coord.y/cellSize)*cellSize
 
+    // TODO: process clearing rects the sameway as paint does
     PUB('canvas.render.clearRect', {
       rect:{
         x,
@@ -84,8 +79,16 @@ const makeCanvasProcesser = (PUBSUB/*, context*/) => {
     PUB('canvas.render.clearAll', {})
   })
 
-  const sub4 = SUB('command.fillAll', msg => {
-    PUB('canvas.render.fillAll', msg)
+  // also, we should clear this up, I thnk we're doing a lot of unnecessary
+  // conversions :P
+  const sub4 = SUB('command.smartFill', ({cellSize, coord, color}) => {
+    const x = Math.floor(coord.x/cellSize)
+    const y = Math.floor(coord.y/cellSize)
+    PUB('canvas.render.smartFill', {
+      x,y,
+      cellSize,
+      color
+    })
   })
   // we might add a message list at some point
   const obj = {
@@ -93,7 +96,7 @@ const makeCanvasProcesser = (PUBSUB/*, context*/) => {
       PUBSUB.unsubscribe('command.dotpen', sub1)
       PUBSUB.unsubscribe('command.eraser', sub2)
       PUBSUB.unsubscribe('command.clear', sub3)
-      PUBSUB.unsubscribe('command.fillAll', sub4)
+      PUBSUB.unsubscribe('command.smartFill', sub4)
     }
   }
   return obj

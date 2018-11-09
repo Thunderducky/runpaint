@@ -48,12 +48,29 @@ const makeMouseContext = (context, PUBSUB) => {
       context.mouse.inside = true
     }
 
+    if(topic === "context.mouse.up"){
+      const {
+        tool, style, cellSize
+      } = context.canvas
+      const mouse = context.mouse
+      if(mouse.inside && !mouse.down){
+        if(tool === 'smartFill'){
+          PUB('command.smartFill', {
+            cellSize,
+            coord: mouse.coord,
+            color:style
+          })
+        }
+      }
+    }
+
     const toolTopics = ['context.mouse.down','context.mouse.move']
     if(toolTopics.includes(topic)){
       const {
         tool, style, cellSize
       } = context.canvas
-      const mouse = context.mouse;
+      const mouse = context.mouse
+      // fills only do mouse up
       if(mouse.inside && mouse.down){
         if(tool === 'dotpen'){
           PUB('command.dotpen', {
@@ -90,13 +107,14 @@ const makeMouseContext = (context, PUBSUB) => {
 }
 const makePaletteContext = (context, PUBSUB) => {
   // PALETTE EVENTS //
-  const {publish:PUB, subscribe:SUB} = PUBSUB
+  const {subscribe:SUB} = PUBSUB
   SUB('context.palette.add', ({name, color}) => {
     context.palette.push({name, color})
   })
 
-  SUB('context.palette.remove', ({ index }) => {
-    throw new Error("palette not removed, not implemented")
+  // TODO: Remove from palette
+  SUB('context.palette.remove', () => {
+    throw new Error('palette not removed, not implemented')
     //context.palette.push({name, color})
   })
 }
