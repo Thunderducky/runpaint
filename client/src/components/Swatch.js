@@ -1,9 +1,11 @@
 import React from 'react'
 import { isDark } from '../modules/colorHelper'
+
 const styles = {
   swatch: {
     margin:15,
-    padding:15
+    padding:15,
+    position:"relative"
   }
 }
 const NOOP = () => {}
@@ -11,7 +13,7 @@ const NOOP = () => {}
 const Swatch = props => {
   const propStyle = {}
   if(props.color){
-    propStyle.background = props.color,
+    propStyle.background = props.color
     propStyle.color = isDark(props.color) ? 'white': 'black'
   } else {
     propStyle.border = "1px solid white";

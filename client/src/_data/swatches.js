@@ -1,18 +1,21 @@
 const SWATCHES = [{
+  name: 'eraser',
+  color: '#00000000'
+},{
   name: 'black',
-  color: '#000000'
+  color: '#000000FF'
 }, {
   name: 'white',
-  color: '#FFFFFF'
+  color: '#FFFFFFFF'
 },{
   name: 'red',
-  color: '#CC4444'
+  color: '#CC4444FF'
 },{
   name: 'blue',
-  color: '#4444CC'
+  color: '#4444CCFF'
 },{
   name: 'green',
-  color: '#44CC44'
+  color: '#44CC44FF'
 }]
 
 export default SWATCHES

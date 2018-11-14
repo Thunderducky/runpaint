@@ -1,7 +1,15 @@
 import React from 'react'
 import Swatch from './Swatch'
 import * as Icons from './Icons'
-// Let's finish this up and then we'll go on to the 'tool bar' aspect of things
+
+const style={
+  closeBox: {
+    position:"absolute",
+    right:0,
+    top:0,
+    cursor:"pointer" // TODO: choose something better
+  }
+}
 
 // convenience function for making colors
 const c = (colorCode, name) => ({
@@ -10,15 +18,15 @@ const c = (colorCode, name) => ({
 })
 
 const colors = [
-  c('#FFFFFF', 'white'),
-  c('#FF0000', 'red'),
-  c('#00FF00', 'green'),
-  c('#0000FF', 'blue'),
-  c('#000000', 'black')
+  c('#00000000', 'Eraser'),
+  c('#FFFFFFFF', 'white'),
+  c('#FF0000FF', 'red'),
+  c('#00FF00FF', 'green'),
+  c('#0000FFFF', 'blue'),
+  c('#000000FF', 'black')
 ]
 
 class Palette extends React.Component{
-  // HELPER THAT MAKES THE CORRECT CLICK HANDLER BASED OFF OF COLOR
   state = {
     activeColor: colors[0].color,
     activeTool: 'dotpen',
@@ -36,6 +44,10 @@ class Palette extends React.Component{
 
     const { palette } = this.props.context.request()
     this.setState({palette})
+
+    SUB('context.palette.update',({palette}) => {
+      this.setState({palette})
+    })
   }
 
   renderToolIcon = () => {
@@ -54,6 +66,14 @@ class Palette extends React.Component{
   eraserClick(){
     this.setState({activeColor: ""})
     this.props.PUBSUB.publish('context.canvas.set.tool', {tool: 'eraser'})
+  }
+  triggerAddColor(){
+    const name = prompt("provide a name")
+    const color = prompt("provie a color code (#FFFFFF)") + "FF"
+    this.props.PUBSUB.publish('context.palette.add', {name, color})
+  }
+  triggerRemoveColor(index){
+    this.props.PUBSUB.publish('context.palette.remove', {index})
   }
 
   render(){
@@ -76,16 +96,19 @@ class Palette extends React.Component{
             {this.renderToolIcon()}
           </Swatch>
         </div>
-        <Swatch onClick={() => this.eraserClick()}>
-          Eraser
-        </Swatch>
         {this.state.palette.map(
           ({color, name}, index) => (
             <Swatch key={index} color={color} onClick={wrapClickColor(color)}>
+              <div style={style.closeBox}onClick={() => this.triggerRemoveColor(index)}>x</div>
               {name}
             </Swatch>
           )
         )}
+        <Swatch color="#00000000" onClick={() =>this.triggerAddColor()}>
+          <div style={{padding:15, background:"white", color:"black", textAlign:"center"}}>
+            +
+          </div>
+        </Swatch>
       </div>
     )
   }

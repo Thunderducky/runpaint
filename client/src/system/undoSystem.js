@@ -21,6 +21,7 @@ const makeUndoSystem = (PUBSUB, topics, onReset, filter) => {
       this._undoIndex++
 
       const count = this._recorder.count()
+      
       const lastIndex = count - 1
 
       if(count < this._undoIndex){

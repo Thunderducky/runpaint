@@ -3,8 +3,14 @@ const makeCanvasLayerRenderer = (PUBSUB, ctx) => {
   // subscribe to fillingRect and clearingRect
   // These are relatively low level, shouldn't go around these
   const sub1 = PUBSUB.subscribe('canvas.render.fillRect', ({rect, style=''}) => {
-    if(style) ctx.fillStyle=style
+    if(style){
+      ctx.fillStyle=style
+      if(style[5] !== "F" && style[6] !== "F"){
+        ctx.clearRect(rect.x, rect.y, rect.width, rect.height)
+      }
+    }
     ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
+
   })
   const sub2 = PUBSUB.subscribe('canvas.render.clearRect', ({rect}) => {
     ctx.clearRect(rect.x, rect.y, rect.width, rect.height)
@@ -55,6 +61,9 @@ const makeCanvasLayerRenderer = (PUBSUB, ctx) => {
       }
     }
     const paintCell = (cell, color) => {
+      if(color[5] !== "F" && color[6] !== "F"){
+        ctx.clearRect(cell.x*cellSize, cell.y*cellSize, cellSize, cellSize);
+      }
       ctx.fillStyle=color
       ctx.fillRect(cell.x*cellSize, cell.y*cellSize, cellSize, cellSize)
     }
@@ -125,9 +134,7 @@ const makeCanvasLayerRenderer = (PUBSUB, ctx) => {
       neighbors.forEach(n => {
         cellQueue.push(n)
       })
-
     }
-
   })
 
   const obj = {

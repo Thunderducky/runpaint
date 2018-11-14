@@ -1,10 +1,11 @@
 import SWATCHES from '../_data/swatches'
 
+const lazyCopy = (data) => JSON.parse(JSON.stringify(data))
 // we should build functions on top of the messaging system :/
 const makeCanvasContext = (context, PUBSUB) => {
   const {publish:PUB, subscribe:SUB} = PUBSUB
-  // CANVAS EVENTS
-  // combine these events
+
+  // NOTE: combine these events
   SUB('context.canvas.set.height', ({height}) => {
     context.canvas.height = height
     PUB('context.canvas.update.height', {height})
@@ -107,15 +108,34 @@ const makeMouseContext = (context, PUBSUB) => {
 }
 const makePaletteContext = (context, PUBSUB) => {
   // PALETTE EVENTS //
-  const {subscribe:SUB} = PUBSUB
+  const {publish:PUB, subscribe:SUB} = PUBSUB
   SUB('context.palette.add', ({name, color}) => {
     context.palette.push({name, color})
+    PUB('context.palette.update', {palette: context.palette})
   })
 
   // TODO: Remove from palette
-  SUB('context.palette.remove', () => {
-    throw new Error('palette not removed, not implemented')
+  SUB('context.palette.remove', ({index}) => {
+    //throw new Error('palette not removed, not implemented')
     //context.palette.push({name, color})
+    context.palette.splice(index, 1);
+    // if we removed the active color, switch?
+    PUB('context.palette.update', {palette: context.palette})
+  })
+
+  SUB('context.palette.default', () => {
+    context.palette = lazyCopy(SWATCHES);
+    PUB('context.palette.update', {palette: context.palette})
+  })
+
+  SUB('context.palette.save', () => {
+    const stringPalette = JSON.stringify(context.palette)
+    localStorage.setItem('saved_palette', stringPalette)
+  })
+  SUB('context.palette.load', () => {
+    const stringPalette = localStorage.getItem('saved_palette')
+    context.palette = JSON.parse(stringPalette);
+    PUB('context.palette.update', {palette: context.palette})
   })
 }
 const makeMasterContext = (PUBSUB) => {
@@ -135,7 +155,7 @@ const makeMasterContext = (PUBSUB) => {
       prevCoord: {x:0,y:0},
       inside:false // inside the canvas
     },
-    palette: SWATCHES,
+    palette: lazyCopy(SWATCHES),
   }
 
   makeCanvasContext(context, PUBSUB)

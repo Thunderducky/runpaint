@@ -85,19 +85,6 @@ const makeCanvasProcesser = (PUBSUB/*, context*/) => {
     })
   })
 
-  // build a general purpose undo/redo mechanism
-  const sub5 = SUB('command', (msg, topic) => {
-    if(topic === "command.undo"){
-      // UNDO
-      // turn off the recorder
-    } else if(topic === "command.redo"){
-      // REDO
-      // turn off the recorder
-    } else {
-      // RECORD
-    }
-  })
-
   // we might add a message list at some point
   const obj = {
     unsubscribe:() => {
@@ -105,7 +92,6 @@ const makeCanvasProcesser = (PUBSUB/*, context*/) => {
       PUBSUB.unsubscribe('command.eraser', sub2)
       PUBSUB.unsubscribe('command.clear', sub3)
       PUBSUB.unsubscribe('command.smartFill', sub4)
-      PUBSUB.unsubscribe('command', sub5)
     }
   }
   return obj

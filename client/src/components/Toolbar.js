@@ -20,6 +20,18 @@ class Toolbar extends React.Component {
     this.props.PUBSUB.publish('command.clear', {})
   }
 
+  savePalette = () => {
+    this.props.PUBSUB.publish('context.palette.save', {})
+  }
+
+  loadPalette = () => {
+    this.props.PUBSUB.publish('context.palette.load', {})
+  }
+
+  defaultPalette = () => {
+    this.props.PUBSUB.publish('context.palette.default', {})
+  }
+
   render(){
     const isActive = tool => tool === this.state.activeTool
     return (
@@ -35,6 +47,15 @@ class Toolbar extends React.Component {
         </Tool>
         <Tool onClick={() => this.clearAll() }>
           <Icons.Eraser/> Clear All
+        </Tool>
+        <Tool onClick={() => this.savePalette() }>
+          Save Palette
+        </Tool>
+        <Tool onClick={() => this.loadPalette() }>
+          Load Palette
+        </Tool>
+        <Tool onClick={() => this.defaultPalette() }>
+          Restore Default Palette
         </Tool>
 
       </div>

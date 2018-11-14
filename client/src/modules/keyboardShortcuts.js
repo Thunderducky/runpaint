@@ -7,6 +7,11 @@ const makeKeyboardShortcuts = PUBSUB => {
     } else if(key === 'q'){
       PUB('context.canvas.set.tool', { tool: 'dotpen' })
     }
+    else if(key === 'z'){
+      PUB('command.undo', {})
+    } else if(key === 'x'){
+      PUB('command.redo', {})
+    }
   })
 }
 
