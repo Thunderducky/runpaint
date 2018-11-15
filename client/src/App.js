@@ -19,13 +19,13 @@ class App extends React.Component {
 
     // need to build a better system for this, but hey :)
     // Let's try and just make the undo and redo piece here
-    PUBSUB.subscribe('command.undo', (msg, topic) => {
+    PUBSUB.subscribe('command.undo', () => {
       this.undoSystem.undo()
     })
-    PUBSUB.subscribe('command.redo', (msg, topic) => {
+    PUBSUB.subscribe('command.redo', () => {
       this.undoSystem.redo()
     })
-    
+
     //DEBUG: window.PUBSUB = PUBSUB
 
     makeKeyboardShortcuts(PUBSUB)
