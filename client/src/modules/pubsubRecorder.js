@@ -8,7 +8,7 @@ const makePubsubRecorder = (PUBSUB, topics, filter = DEFAULT_FILTER) => {
     _topics: topics,
     recording: false,
     get messages(){
-      return jsonCopy(this._messages);
+      return jsonCopy(this._messages)
     },
     listen(){
       this.recording = true
@@ -20,7 +20,7 @@ const makePubsubRecorder = (PUBSUB, topics, filter = DEFAULT_FILTER) => {
     },
     // replays stop any records
     replay(startIndex = 0, lastIndex = this._messages.length - 1){
-      const oldRecording = this.recording;
+      const oldRecording = this.recording
       this.recording = false
       this._messages.slice(startIndex, lastIndex + 1).forEach(
         p => PUBSUB.publish(p.topic, p.msg)
@@ -49,7 +49,7 @@ const makePubsubRecorder = (PUBSUB, topics, filter = DEFAULT_FILTER) => {
   obj._topics.forEach(topic => {
     PUBSUB.subscribe(topic, (msg, _topic) => {
       if(obj.recording){
-        console.log("received");
+        console.log('received')
         if(filter({msg:msg, topic: _topic}, last(obj._messages) || false)) {
           obj._messages.push({
             msg: JSON.parse(JSON.stringify(msg)),

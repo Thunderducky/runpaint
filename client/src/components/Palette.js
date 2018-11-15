@@ -4,10 +4,10 @@ import * as Icons from './Icons'
 
 const style={
   closeBox: {
-    position:"absolute",
+    position:'absolute',
     right:0,
     top:0,
-    cursor:"pointer" // TODO: choose something better
+    cursor:'pointer' // TODO: choose something better
   }
 }
 
@@ -64,12 +64,12 @@ class Palette extends React.Component{
   }
 
   eraserClick(){
-    this.setState({activeColor: ""})
+    this.setState({activeColor: ''})
     this.props.PUBSUB.publish('context.canvas.set.tool', {tool: 'eraser'})
   }
   triggerAddColor(){
-    const name = prompt("provide a name")
-    const color = prompt("provie a color code (#FFFFFF)") + "FF"
+    const name = prompt('provide a name')
+    const color = prompt('provie a color code (#FFFFFF)') + 'FF'
     this.props.PUBSUB.publish('context.palette.add', {name, color})
   }
   triggerRemoveColor(index){
@@ -105,7 +105,7 @@ class Palette extends React.Component{
           )
         )}
         <Swatch color="#00000000" onClick={() =>this.triggerAddColor()}>
-          <div style={{padding:15, background:"white", color:"black", textAlign:"center"}}>
+          <div style={{padding:15, background:'white', color:'black', textAlign:'center'}}>
             +
           </div>
         </Swatch>

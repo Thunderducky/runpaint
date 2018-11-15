@@ -5,7 +5,7 @@ const makeCanvasLayerRenderer = (PUBSUB, ctx) => {
   const sub1 = PUBSUB.subscribe('canvas.render.fillRect', ({rect, style=''}) => {
     if(style){
       ctx.fillStyle=style
-      if(style[5] !== "F" && style[6] !== "F"){
+      if(style[5] !== 'F' && style[6] !== 'F'){
         ctx.clearRect(rect.x, rect.y, rect.width, rect.height)
       }
     }
@@ -61,8 +61,8 @@ const makeCanvasLayerRenderer = (PUBSUB, ctx) => {
       }
     }
     const paintCell = (cell, color) => {
-      if(color[5] !== "F" && color[6] !== "F"){
-        ctx.clearRect(cell.x*cellSize, cell.y*cellSize, cellSize, cellSize);
+      if(color[5] !== 'F' && color[6] !== 'F'){
+        ctx.clearRect(cell.x*cellSize, cell.y*cellSize, cellSize, cellSize)
       }
       ctx.fillStyle=color
       ctx.fillRect(cell.x*cellSize, cell.y*cellSize, cellSize, cellSize)

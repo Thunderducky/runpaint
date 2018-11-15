@@ -1,6 +1,6 @@
 const times = (fn, count) => {
   for(var i = 0; i < count; i++){
-    fn();
+    fn()
   }
 }
 const last = arr => arr[arr.length-1]

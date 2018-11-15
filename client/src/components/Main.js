@@ -8,11 +8,11 @@ import MouseTracker from './MouseTracker'
 const Main = props => {
   return (
     <div>
-      <div style={{display:"flex", justifyContent:"space-between"}}>
-        <h1>paintaday</h1>
+      <div style={{display:'flex', justifyContent:'space-between'}}>
+        <h1 className="terminal">paintaday</h1>
         <div>
-          <span style={{cursor:"pointer"}}>&lt;- UNDO (z)</span>&nbsp;&nbsp;
-          <span style={{cursor:"pointer"}}>(x) REDO -&gt;</span>
+          <span style={{cursor:'pointer'}}>&lt;- UNDO (z)</span>&nbsp;&nbsp;
+          <span style={{cursor:'pointer'}}>(x) REDO -&gt;</span>
         </div>
       </div>
       <div style={{display:'flex'}}>

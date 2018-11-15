@@ -49,7 +49,7 @@ const makeMouseContext = (context, PUBSUB) => {
       context.mouse.inside = true
     }
 
-    if(topic === "context.mouse.up"){
+    if(topic === 'context.mouse.up'){
       const {
         tool, style, cellSize
       } = context.canvas
@@ -118,13 +118,13 @@ const makePaletteContext = (context, PUBSUB) => {
   SUB('context.palette.remove', ({index}) => {
     //throw new Error('palette not removed, not implemented')
     //context.palette.push({name, color})
-    context.palette.splice(index, 1);
+    context.palette.splice(index, 1)
     // if we removed the active color, switch?
     PUB('context.palette.update', {palette: context.palette})
   })
 
   SUB('context.palette.default', () => {
-    context.palette = lazyCopy(SWATCHES);
+    context.palette = lazyCopy(SWATCHES)
     PUB('context.palette.update', {palette: context.palette})
   })
 
@@ -134,7 +134,7 @@ const makePaletteContext = (context, PUBSUB) => {
   })
   SUB('context.palette.load', () => {
     const stringPalette = localStorage.getItem('saved_palette')
-    context.palette = JSON.parse(stringPalette);
+    context.palette = JSON.parse(stringPalette)
     PUB('context.palette.update', {palette: context.palette})
   })
 }
