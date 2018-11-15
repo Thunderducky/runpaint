@@ -15,17 +15,30 @@ const isDuplicateDotPens = (msg, prevMsg) => {
   return isSameCell(msg.coord, prevMsg.coord, msg.cellSize)
 }
 
-// const printDotpenMsg = (c) => {
-//   const {x,y} = c.msg.coord;
-//   console.log(`${c.topic}\n   x: ${x}, y: ${y}, con: ${c.msg.continuing ? 'y' : 'n'}`)
-// }
 const undoableEvents = [
     'command.dotpen',
     'command.clear',
     'command.smartFill'
   ]
+
 // THIS IS NOT GENERAL PURPOSE, THIS IS OUR SPECIFIC UNDO SYSTEM WITH ALL THE GROSSNESS INSIDE
 const makeUndoSystem2 = (PUBSUB) => {
+  const sealUndoStatus = (msg) => {
+    console.log("make sure we preserve our sealing order")
+    if(obj._recorder.recording && obj._undoIndex !== 0){
+      console.log("seal");
+      obj._recorder.rollback(obj._undoIndex);
+      obj._undoIndex = 0;
+      console.log(obj._undoIndex);
+    }
+  }
+
+  // we need to register this first so that the we intercept before the recorder does
+  undoableEvents.forEach(e => {
+    // we should subscribe to these events first
+    PUBSUB.subscribe(e, sealUndoStatus)
+  })
+
   const obj = {
     _undoIndex: 0,
     _recorder: makePubsubRecorder(PUBSUB, undoableEvents, (current, prev) => {
@@ -35,28 +48,21 @@ const makeUndoSystem2 = (PUBSUB) => {
         if(prev.topic === "command.dotpen" && current.topic === "command.dotpen"){
           return !isDuplicateDotPens(current.msg, prev.msg);
         }
+        return true;
       }).listen(),
     get history(){
       return this._recorder.messages
     },
-  };
-
-  const sealUndoStatus = (msg) => {
-    if(obj._recorder.recording && obj._undoIndex !== 0){
-      console.log("seal");
-      obj._recorder.rollback(obj._undoIndex + 1);
-      obj._undoIndex = 0;
-      console.log(obj._undoIndex);
-    }
   }
 
-  undoableEvents.forEach(e => {
-    PUBSUB.subscribe(e, sealUndoStatus)
-  })
+
 
   obj.undo = () => {
     obj._undoIndex++;
-    if(obj._undoIndex > obj.history.length){ obj._undoIndex = obj.history.length }
+    if(obj._undoIndex > obj.history.length){
+      obj._undoIndex = obj.history.length;
+      return
+    }
     console.log(obj._undoIndex);
 
     const lastIndex = obj.history.length - obj._undoIndex - 1
@@ -69,7 +75,10 @@ const makeUndoSystem2 = (PUBSUB) => {
   };
   obj.redo = () => {
     obj._undoIndex--;
-    if(obj._undoIndex < 0) obj._undoIndex = 0;
+    if(obj._undoIndex < 0) {
+      obj._undoIndex = 0;
+      return;
+    }
     console.log(obj._undoIndex);
 
     const lastIndex = obj.history.length - obj._undoIndex - 1

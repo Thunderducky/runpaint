@@ -49,6 +49,7 @@ const makePubsubRecorder = (PUBSUB, topics, filter = DEFAULT_FILTER) => {
   obj._topics.forEach(topic => {
     PUBSUB.subscribe(topic, (msg, _topic) => {
       if(obj.recording){
+        console.log("received");
         if(filter({msg:msg, topic: _topic}, last(obj._messages) || false)) {
           obj._messages.push({
             msg: JSON.parse(JSON.stringify(msg)),
