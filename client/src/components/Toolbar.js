@@ -31,6 +31,15 @@ class Toolbar extends React.Component {
   defaultPalette = () => {
     this.props.PUBSUB.publish('context.palette.default', {})
   }
+  exportAsPNG = event => {
+   // based off of: https://stackoverflow.com/questions/12796513/html5-canvas-to-png-file
+   let download = document.querySelector('canvas').toDataURL('image/png')
+   download = download.replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
+
+   /* In addition to <a>'s "download" attribute, you can define HTTP-style headers */
+   download = download.replace(/^data:application\/octet-stream/, 'data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=Mastapeece.png')
+   event.target.href = download
+ }
 
   render(){
     const isActive = tool => tool === this.state.activeTool
@@ -51,11 +60,16 @@ class Toolbar extends React.Component {
         <Tool onClick={() => this.savePalette() }>
           Save Palette
         </Tool>
+
         <Tool onClick={() => this.loadPalette() }>
           Load Palette
         </Tool>
         <Tool onClick={() => this.defaultPalette() }>
           Restore Default Palette
+        </Tool>
+
+        <Tool>
+          <a download="Mastapeece.png" onClick={this.exportAsPNG}>Export Image</a>
         </Tool>
 
       </div>

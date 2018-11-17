@@ -14,19 +14,17 @@ const styles = {
     width:'100%'
   },
   topMain:{
+    paddingLeft:15,
     gridArea: '1/1',
-    border:'1px solid white'
   },
   midMain:{
     paddingTop:10,
     gridArea: '2/1',
-    border:'1px solid white',
     display: 'flex',
     justifyContent:'center'
   },
   lowMain:{ // haha lo-mein
     gridArea: '3/1',
-    border:'1px solid white',
     padding: "0 15px"
   },
   sidebar:{
