@@ -95,38 +95,6 @@ const makeCanvasLayerRenderer = (PUBSUB, ctx) => {
     cellVisitMarker.visit(origin.x, origin.y)
     const {color:originColor, isEmpty:fillEmpty} = origin
 
-    // every so many iterations take a break :P
-    // need to build a mesh and repaint that instead of calling
-    // all of these singley
-
-    // const whileAsync = (checkFn, runFn, batchSize = 1) => {
-    //   const intervalId = setInterval(function(){
-    //     if(checkFn()){
-    //       for(let i = 0; i < batchSize; i++){
-    //         runFn();
-    //         if(!checkFn()){
-    //           clearInterval(intervalId);
-    //           break;
-    //         }
-    //       }
-    //     } else {
-    //       clearInterval(intervalId);
-    //     }
-    //   },1)
-    // }
-
-    // whileAsync(() => cellQueue.length > 0, () => {
-    //   const nextCell = cellQueue.pop()
-    //   paintCell(nextCell, color)
-    //   const neighbors = getValidNeighbors(nextCell.x, nextCell.y, fillEmpty, originColor)
-    //   neighbors.forEach(n => {
-    //     cellQueue.push(n)
-    //   })
-    //
-    // },50);
-
-
-
     while(cellQueue.length > 0){
       const nextCell = cellQueue.pop()
       paintCell(nextCell, color)

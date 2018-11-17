@@ -35,7 +35,7 @@ class Toolbar extends React.Component {
   render(){
     const isActive = tool => tool === this.state.activeTool
     return (
-      <div style={{display:'flex'}}>
+      <div style={{display:'flex', justifyContent:'space-between'}}>
         <Tool onClick={() => this.setTool('dotpen')} isActive={isActive('dotpen')}>
           <Icons.Pen/> Dotpen
         </Tool>

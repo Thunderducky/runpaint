@@ -3,9 +3,10 @@ import { isDark } from '../modules/colorHelper'
 
 const styles = {
   swatch: {
-    margin:15,
     padding:15,
-    position:'relative'
+    cursor:'pointer',
+    position:'relative',
+    flexGrow:1
   }
 }
 const NOOP = () => {}

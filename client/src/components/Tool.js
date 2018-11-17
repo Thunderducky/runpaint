@@ -1,15 +1,15 @@
 import React from 'react'
 
 const ACTIVE_COLOR = '#aaaaff'
-const DEFAULT_COLOR = '#cccccc'
 
 const style = {
   tool: {
-    padding:15,
-    borderRadius:15,
+    padding:5,
+    borderRadius:5,
     background:'#888888',
-    color:DEFAULT_COLOR,
-    margin: '0 15px'
+    cursor:"pointer",
+    // color:DEFAULT_COLOR,
+    margin: '0 2px'
   },
   activeTool: {
     color:ACTIVE_COLOR

@@ -2,11 +2,13 @@
   box-sizing: border-box;
 }
 
-html {
-  padding:15px;
-  background: #373030;
-  color:#DDDDDD;
-  font-family: monospace;
+html, body, #root {
+  height:100%;
+  width:100%;
+  padding:0px;
+  margin:0px;
+  background:#333333;
+  color:#CCCCCC;
 }
 
 .terminal {
@@ -36,8 +38,8 @@ html {
 canvas {
   border: 3px solid red;
   box-sizing:content-box;
-  /* width:640px; */
 }
+/*
 
 .lightText {
   color: #CCCCCC;
@@ -60,4 +62,4 @@ canvas {
 .spreadRow {
   display:flex;
   justify-content:space-between;
-}
+} */
