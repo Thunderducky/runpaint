@@ -1,58 +1,88 @@
 import {makePubsubRecorder} from '../modules/pubsubRecorder'
-// the undo system is an enhancement of the replay system
-// NOTE: filters can be blank
-// NOTE: onReset must be set blank explicitly
-const makeUndoSystem = (PUBSUB, topics, onReset, filter) => {
-  if(typeof onReset !== 'function'){
-    throw new Error('undo systems require a onReset function, even if it is blank')
-  }
-  if(!topics){
-    throw new Error('undo systems require topics to subscribe to')
-  }
-  if(!Array.isArray(topics)){
-    throw new Error('undo systems topics must be in an array')
-  }
-  const recorder = makePubsubRecorder(PUBSUB, topics, filter).listen()
-  const obj = {
-    _onReset: onReset,
-    _undoIndex: 0,
-    _recorder : recorder,
-    undo(){
-      this._undoIndex++
 
-      const count = this._recorder.count()
-      const lastIndex = count - 1
+const isSameCell = (p1, p2, cellSize) => {
+  // CELL DIMENSION
+  const dim = x => (x - x % cellSize)/cellSize
 
-      if(count < this._undoIndex){
-        this._undoIndex-- // undo our move, we are done
-      } else {
-        this._onReset()
-        this._recorder.replay(0, lastIndex - this._undoIndex)
-      }
-    },
-    // rollback rolls back to the current undoIndex
-    resetHead(){
-      if(this._undoIndex > 0){
-        this._recorder.rollback(this._undoIndex)
-        this._undoIndex = 0
-      }
-    },
-    redo(){
-      this._undoIndex--
+  // Optimizations exist...
+  return (dim(p1.x) === dim(p2.x) && dim(p1.y) === dim(p2.y))
+}
 
-      if(this._undoIndex < 0){
-        this._undoIndex = 0
-      }
+const isDuplicateDotPens = (msg, prevMsg) => {
+  return isSameCell(msg.coord, prevMsg.coord, msg.cellSize)
+}
 
-      const count = this._recorder.count()
-      const lastIndex = count - 1
-      const actionIndex = lastIndex - this._undoIndex
+const undoableEvents = [
+  'command.dotpen',
+  'command.clear',
+  'command.smartFill'
+]
 
-      if(this._undoIndex > 0){
-        this._recorder.replay(actionIndex, actionIndex)
-      }
+// THIS IS NOT GENERAL PURPOSE, THIS IS OUR SPECIFIC UNDO SYSTEM WITH ALL THE GROSSNESS INSIDE
+const makeUndoSystem = (PUBSUB) => {
+  // HELPER FOR THE UNDO SYSTEM
+  const sealUndoStatus = () => {
+    if(obj._recorder.recording && obj._undoIndex !== 0){
+      obj._recorder.rollback(obj._undoIndex)
+      obj._undoIndex = 0
     }
   }
+
+  // we need to register this first so that the we intercept before the recorder does
+  undoableEvents.forEach(e => {
+    // we should subscribe to these events first
+    PUBSUB.subscribe(e, sealUndoStatus)
+  })
+
+  const obj = {
+    _undoIndex: 0,
+    _recorder: makePubsubRecorder(PUBSUB, undoableEvents, (current, prev) => {
+      if(!prev){
+        return true
+      }
+      if(prev.topic === 'command.dotpen' && current.topic === 'command.dotpen'){
+        return !isDuplicateDotPens(current.msg, prev.msg)
+      }
+      return true
+    }).listen(),
+    get history(){
+      return this._recorder.messages
+    },
+  }
+
+  obj.undo = () => {
+    obj._undoIndex++
+    // If nothing more can be undone
+    if(obj._undoIndex > obj.history.length){
+      obj._undoIndex = obj.history.length
+      return
+    }
+
+    const lastIndex = obj.history.length - obj._undoIndex - 1
+    obj._recorder.deafen()
+
+    PUBSUB.publish('command.clear', {})
+    obj._recorder.replay(0, lastIndex)
+
+    obj._recorder.listen()
+  }
+  obj.redo = () => {
+    obj._undoIndex--
+    if(obj._undoIndex < 0) {
+      obj._undoIndex = 0
+      return
+    }
+
+    const lastIndex = obj.history.length - obj._undoIndex - 1
+    obj._recorder.deafen()
+
+    PUBSUB.publish('command.clear', {})
+    obj._recorder.replay(0, lastIndex)
+
+    obj._recorder.listen()
+  }
+
   return obj
 }
-export {makeUndoSystem}
+
+export { makeUndoSystem }
